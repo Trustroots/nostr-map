@@ -13,7 +13,7 @@ const eventToNoteMinusProfile = ({
   event,
 }: {
   event: NostrEvent;
-}): Omit<Note, "authorName"> => {
+}): Omit<Note, "authorName" | "authorTrustrootsUsername"> => {
   const { id, kind, content } = event;
   // NOTE: We need to cast `note.kind` here because the `NostrEvent` type has a
   // enum for Kinds, which doesn't include our custom kind.
@@ -48,7 +48,8 @@ const eventToNote = ({
   const baseNote = eventToNoteMinusProfile({ event });
   const profile = profiles[baseNote.authorPublicKey];
   const authorName = profile?.name || "";
-  return { ...baseNote, authorName };
+  const authorTrustrootsUsername = profile?.trustrootsUsername || "";
+  return { ...baseNote, authorName, authorTrustrootsUsername };
 };
 
 type SubscribeParams = {

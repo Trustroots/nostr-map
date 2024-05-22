@@ -11,6 +11,7 @@ export type Note = {
   plusCode: string;
   content: string;
   authorName: string;
+  authorTrustrootsUsername: string;
   authorPublicKey: string;
   authorNpubPublicKey: string;
 };
@@ -20,5 +21,6 @@ export type Profile = {
   npubPublicKey: string;
   name: string;
   about: string;
+  trustrootsUsername: string;
   picture: string;
 };
