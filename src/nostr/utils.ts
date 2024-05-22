@@ -6,6 +6,7 @@ import {
   nip26,
   signEvent,
 } from "nostr-tools";
+import DOMPurify from "dompurify";
 import { NostrEvent, Profile, UnsignedEvent } from "../types";
 
 export const dateToUnix = (_date?: Date) => {
@@ -111,5 +112,6 @@ export const uniq = <T>(input: T[]): T[] => {
 };
 
 export const doesStringPassSanitisation = (input: string): boolean => {
-  return true;
+  const sanitised = DOMPurify.sanitize(input);
+  return sanitised === input;
 };
