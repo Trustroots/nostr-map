@@ -3,9 +3,8 @@ export const RELAYS_STORAGE_KEY = "__nostrRelays" as const;
 export const PLUS_CODE_TAG_KEY = "l" as const;
 export const MAP_NOTE_KIND = 397 as const;
 export const DEFAULT_RELAYS = [
-  "wss://nostr.massmux.com",
-  "wss://public.nostr.swissrouting.com",
-  "wss://nostr.slothy.win",
+  "wss://nostr.wine",
+  "wss://nos.lol",
 ];
 export const PANEL_CONTAINER_ID = "panelID";
 export const BADGE_CONTAINER_ID = "badge";
