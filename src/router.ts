@@ -66,11 +66,9 @@ export const getUrlFromNpubPublicKey = ({
 
 export const getUrlFromPublicKeyAndView = ({
   publicKey,
-  location = globalThis.document.location,
   view,
 }: {
   publicKey: string;
-  location?: Location;
   view?: {
     zoom: number;
     lat: number;
