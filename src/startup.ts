@@ -9,6 +9,7 @@ import {
   setPrivateKey,
 } from "./nostr/keys";
 import { subscribeAndGetProfile, setProfile } from "./nostr/profiles";
+import { getTrustrootsUsernameFromLocation } from "./router";
 
 export const startup = async () => {
   const isLoggedIn = await hasPrivateKey();
@@ -47,9 +48,10 @@ export const startup = async () => {
 
       const name = profileNameInput.value;
       const about = profileAboutInput.value;
+      const trustrootsUsername = getTrustrootsUsernameFromLocation();
 
       try {
-        await setProfile({ name, about });
+        await setProfile({ name, about, trustrootsUsername });
 
         globalThis.alert("Your profile was updated.");
         globalThis.document.location.reload();
@@ -74,7 +76,8 @@ export const startup = async () => {
 
       try {
         await createPrivateKey();
-        setProfile({ name, about }).then(() => {
+        const trustrootsUsername = getTrustrootsUsernameFromLocation();
+        setProfile({ name, about, trustrootsUsername }).then(() => {
           globalThis.alert("Your account was created.");
           globalThis.document.location.reload();
         });

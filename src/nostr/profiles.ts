@@ -9,12 +9,15 @@ type SetProfileParams = {
   name: string;
   /** A longer string that may (later) be shown on the user's profile page */
   about: string;
+  /** The user's (unverified) trustroots username */
+  trustrootsUsername: string;
   /** The private key of the user, optionally fetched from localStorage */
   privateKey?: string;
 } & MaybeLocalStorage;
 export const setProfile = async ({
   name,
   about,
+  trustrootsUsername,
   privateKey,
   localStorage,
 }: SetProfileParams) => {
@@ -22,7 +25,7 @@ export const setProfile = async ({
     typeof privateKey !== "undefined"
       ? privateKey
       : await getPrivateKey({ localStorage });
-  const content = JSON.stringify({ name, about });
+  const content = JSON.stringify({ name, about, trustrootsUsername });
   const unsignedEvent: UnsignedEvent = {
     kind: Kind.Metadata,
     content,
@@ -72,7 +75,14 @@ export const subscribeAndGetProfile = async ({
     // Timeout after 2s. This is a no-op if the promise already resolved above.
     setTimeout(() => {
       const npubPublicKey = nip19.npubEncode(publicKey);
-      resolve({ publicKey, npubPublicKey, name: "", about: "", picture: "" });
+      resolve({
+        publicKey,
+        npubPublicKey,
+        name: "",
+        trustrootsUsername: "",
+        about: "",
+        picture: "",
+      });
     }, 2e3);
   });
 };

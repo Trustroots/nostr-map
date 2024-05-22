@@ -6,11 +6,6 @@ import { createNote } from "./nostr/notes";
 import { _initRelays } from "./nostr/relays";
 import { subscribe } from "./nostr/subscribe";
 import {
-  getPublicKeyFromUrl,
-  getUrlFromNpubPublicKey,
-  getUrlFromPublicKeyAndView,
-} from "./router";
-import {
   PANEL_CONTAINER_ID,
   BADGE_CONTAINER_ID,
   CURRENT_PUBLIC_KEY_ID,
@@ -67,12 +62,6 @@ map.on("contextmenu", async (event) => {
   const coords = { latitude: event.latlng.lat, longitude: event.latlng.lng };
   const plusCode = encode(coords, 6)!;
 
-  const { publicKey: viewingCurrentPublicKey } = getPublicKeyFromUrl();
-  const myPublicKey = await getPublicKey();
-  const viewingMyOwnMap =
-    typeof viewingCurrentPublicKey === "undefined" ||
-    viewingCurrentPublicKey === myPublicKey;
-
   const selectedPlusCodePoly = generatePolygonFromPlusCode(plusCode);
 
   selectedPlusCodePoly.setStyle({ color: "grey" });
@@ -82,11 +71,7 @@ map.on("contextmenu", async (event) => {
     createNote({ content, plusCode });
   };
 
-  const popupContent = viewingMyOwnMap
-    ? createPopupHtml(createNoteCallback)
-    : `View <a href="${getUrlFromPublicKeyAndView({
-        publicKey: myPublicKey,
-      })}">your own map</a> to add notes.`;
+  const popupContent = createPopupHtml(createNoteCallback);
 
   L.popup()
     .setLatLng(event.latlng)
@@ -94,28 +79,6 @@ map.on("contextmenu", async (event) => {
     .openOn(map)
     .on("remove", (e) => selectedPlusCodePoly.remove());
 });
-
-async function updateUrl() {
-  const center = map.getCenter();
-  const zoom = map.getZoom();
-  const view = {
-    lat: center.lat,
-    lng: center.lng,
-    zoom,
-  };
-  const publicKey = await getPublicKey();
-  if (!publicKey) return;
-
-  const yourUrl = getUrlFromPublicKeyAndView({ publicKey, view });
-  const yourUrlHref = globalThis.document.getElementById(
-    "yourUrl"
-  ) as HTMLLinkElement;
-  yourUrlHref.href = yourUrl;
-  yourUrlHref.innerText = yourUrl;
-}
-
-map.on("moveend", updateUrl);
-map.on("zoomend", updateUrl);
 
 function generatePolygonFromPlusCode(plusCode: string) {
   const decoded = decode(plusCode);
@@ -136,15 +99,16 @@ globalThis.addEventListener("popstate", (event) => {
 });
 
 function generateContentFromNotes(notes: Note[]) {
-  let content = "";
-  for (const note of notes) {
-    const url = getUrlFromNpubPublicKey({
-      npubPublicKey: note.authorNpubPublicKey,
-    });
-    content += `${note.content} – by <a href="${url}">${
-      note.authorName || note.authorPublicKey.substring(0, 5) + "..."
-    }</a><br>`;
-  }
+  const lines = notes.reduce((existingLines, note) => {
+    const link =
+      typeof note.authorTrustrootsUsername === "string" &&
+      note.authorTrustrootsUsername.length > 3
+        ? ` by <a href="https://www.trustroots.org/profile/${note.authorTrustrootsUsername}">${note.authorName}</a>`
+        : "";
+    const noteContent = `${note.content}${link}`;
+    return existingLines.concat(noteContent);
+  }, [] as string[]);
+  const content = lines.join("<br />");
   return content;
 }
 
@@ -200,21 +164,10 @@ function createPopupHtml(createNoteCallback) {
 }
 
 const mapStartup = async () => {
-  const { publicKey, view } = getPublicKeyFromUrl();
-  if (view) map.setView([view.lat, view.lng], view.zoom);
   const badge = L.DomUtil.get(BADGE_CONTAINER_ID) as HTMLElement;
-  if (publicKey) {
-    L.DomUtil.addClass(badge, "show");
-    L.DomUtil.removeClass(badge, "hide");
-    const publicKeyElement = L.DomUtil.get(
-      CURRENT_PUBLIC_KEY_ID
-    ) as HTMLSpanElement;
-    publicKeyElement.innerText = publicKey.substring(0, 5) + "...";
-  } else {
-    L.DomUtil.addClass(badge, "hide");
-    L.DomUtil.removeClass(badge, "show");
-  }
+  L.DomUtil.addClass(badge, "hide");
+  L.DomUtil.removeClass(badge, "show");
   await _initRelays();
-  subscribe({ publicKey, onNoteReceived: addNoteToMap });
+  subscribe({ onNoteReceived: addNoteToMap });
 };
 mapStartup();
