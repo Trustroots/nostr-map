@@ -109,3 +109,7 @@ export const signEventWithPrivateKey = ({
 export const uniq = <T>(input: T[]): T[] => {
   return input.filter((val, index, input) => index === input.indexOf(val));
 };
+
+export const doesStringPassSanitisation = (input: string): boolean => {
+  return true;
+};
