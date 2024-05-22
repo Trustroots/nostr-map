@@ -1,9 +1,12 @@
 import { Kind, nip19 } from "nostr-tools";
-import DOMPurify from "dompurify";
 import { MaybeLocalStorage, Profile, UnsignedEvent } from "../types";
 import { getPrivateKey } from "./keys";
 import { _publish, _subscribe } from "./relays";
-import { getProfileFromEvent, signEventWithPrivateKey } from "./utils";
+import {
+  getProfileFromEvent,
+  sanitise,
+  signEventWithPrivateKey,
+} from "./utils";
 
 type SetProfileParams = {
   /** The user's name to be sent to all relays */
@@ -28,9 +31,9 @@ export const setProfile = async ({
       : await getPrivateKey({ localStorage });
 
   const sanitisedProfile = {
-    name: DOMPurify.sanitize(name),
-    about: DOMPurify.sanitize(about),
-    trustrootsUsername: DOMPurify.sanitize(trustrootsUsername),
+    name: sanitise(name),
+    about: sanitise(about),
+    trustrootsUsername: sanitise(trustrootsUsername),
   };
 
   const content = JSON.stringify(sanitisedProfile);

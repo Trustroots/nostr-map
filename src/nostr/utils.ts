@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import {
   getEventHash,
   getPublicKey as getPublicKeyFromPrivateKey,
@@ -6,7 +7,6 @@ import {
   nip26,
   signEvent,
 } from "nostr-tools";
-import DOMPurify from "dompurify";
 import { NostrEvent, Profile, UnsignedEvent } from "../types";
 
 export const dateToUnix = (_date?: Date) => {
@@ -111,7 +111,12 @@ export const uniq = <T>(input: T[]): T[] => {
   return input.filter((val, index, input) => index === input.indexOf(val));
 };
 
+export const sanitise = (input: string): string => {
+  const sanitised = DOMPurify.sanitize(input, { ALLOWED_TAGS: [] });
+  return sanitised;
+};
+
 export const doesStringPassSanitisation = (input: string): boolean => {
-  const sanitised = DOMPurify.sanitize(input);
+  const sanitised = sanitise(input);
   return sanitised === input;
 };
