@@ -119,16 +119,17 @@ export const subscribe = async ({
 
   const onProfileEvent = (event: NostrEvent) => {
     const profile = getProfileFromEvent({ event });
+    const publicKey = getPublicKeyFromEvent({ event });
 
     if (
       !doesStringPassSanitisation(profile.name) ||
       !doesStringPassSanitisation(profile.about) ||
-      !doesStringPassSanitisation(profile.trustrootsUsername)
+      !doesStringPassSanitisation(profile.trustrootsUsername) ||
+      !doesStringPassSanitisation(publicKey)
     ) {
       return;
     }
 
-    const publicKey = getPublicKeyFromEvent({ event });
     profiles[publicKey] = profile;
   };
 
