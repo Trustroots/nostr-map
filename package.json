@@ -17,12 +17,14 @@
   },
   "devDependencies": {
     "@parcel/transformer-sass": "2.8.3",
+    "@types/dompurify": "^3.0.5",
     "@types/leaflet": "^1.9.0",
     "gh-pages": "^5.0.0",
     "parcel": "^2.8.3",
     "prettier": "2.8.3"
   },
   "dependencies": {
+    "dompurify": "^3.1.4",
     "leaflet": "^1.9.3",
     "leaflet.sidepanel": "https://github.com/maxwell-ilai/Leaflet.SidePanel",
     "nostr-tools": "^1.2.1",

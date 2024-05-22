@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import {
   getEventHash,
   getPublicKey as getPublicKeyFromPrivateKey,
@@ -108,4 +109,14 @@ export const signEventWithPrivateKey = ({
 
 export const uniq = <T>(input: T[]): T[] => {
   return input.filter((val, index, input) => index === input.indexOf(val));
+};
+
+export const sanitise = (input: string): string => {
+  const sanitised = DOMPurify.sanitize(input, { ALLOWED_TAGS: [] });
+  return sanitised;
+};
+
+export const doesStringPassSanitisation = (input: string): boolean => {
+  const sanitised = sanitise(input);
+  return sanitised === input;
 };

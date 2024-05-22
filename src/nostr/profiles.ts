@@ -2,7 +2,11 @@ import { Kind, nip19 } from "nostr-tools";
 import { MaybeLocalStorage, Profile, UnsignedEvent } from "../types";
 import { getPrivateKey } from "./keys";
 import { _publish, _subscribe } from "./relays";
-import { getProfileFromEvent, signEventWithPrivateKey } from "./utils";
+import {
+  getProfileFromEvent,
+  sanitise,
+  signEventWithPrivateKey,
+} from "./utils";
 
 type SetProfileParams = {
   /** The user's name to be sent to all relays */
@@ -25,7 +29,14 @@ export const setProfile = async ({
     typeof privateKey !== "undefined"
       ? privateKey
       : await getPrivateKey({ localStorage });
-  const content = JSON.stringify({ name, about, trustrootsUsername });
+
+  const sanitisedProfile = {
+    name: sanitise(name),
+    about: sanitise(about),
+    trustrootsUsername: sanitise(trustrootsUsername),
+  };
+
+  const content = JSON.stringify(sanitisedProfile);
   const unsignedEvent: UnsignedEvent = {
     kind: Kind.Metadata,
     content,

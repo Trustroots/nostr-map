@@ -3,6 +3,7 @@ import { MAP_NOTE_KIND, PLUS_CODE_TAG_KEY } from "../constants";
 import { NostrEvent, Note, Profile } from "../types";
 import { _subscribe } from "./relays";
 import {
+  doesStringPassSanitisation,
   getProfileFromEvent,
   getPublicKeyFromEvent,
   getTagFirstValueFromEvent,
@@ -83,6 +84,14 @@ export const subscribe = async ({
   const noteEventsQueue: NostrEvent[] = [];
 
   const onNoteEvent = (event: NostrEvent) => {
+    // TODO Sanitise event
+    if (
+      !doesStringPassSanitisation(event.content) ||
+      !doesStringPassSanitisation(event.pubkey)
+    ) {
+      return;
+    }
+
     if (!gotNotesEose || !gotPromiseEose) {
       noteEventsQueue.push(event);
       return;
@@ -108,10 +117,19 @@ export const subscribe = async ({
     authors,
   };
 
-  const profileEvents: NostrEvent[] = [];
   const onProfileEvent = (event: NostrEvent) => {
     const profile = getProfileFromEvent({ event });
     const publicKey = getPublicKeyFromEvent({ event });
+
+    if (
+      !doesStringPassSanitisation(profile.name) ||
+      !doesStringPassSanitisation(profile.about) ||
+      !doesStringPassSanitisation(profile.trustrootsUsername) ||
+      !doesStringPassSanitisation(publicKey)
+    ) {
+      return;
+    }
+
     profiles[publicKey] = profile;
   };
 
