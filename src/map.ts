@@ -98,13 +98,32 @@ globalThis.addEventListener("popstate", (event) => {
   globalThis.document.location.reload();
 });
 
+function generateLinkFromNote(note: Note): string {
+  const { authorName, authorTrustrootsUsername, authorTripHoppingUserId } =
+    note;
+
+  if (authorTrustrootsUsername.length > 3) {
+    if (authorName.length > 1) {
+      return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}">${authorName}</a>`;
+    }
+    return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}">${authorTrustrootsUsername}</a>`;
+  }
+
+  if (authorTripHoppingUserId.length > 3) {
+    if (authorName.length > 1) {
+      return ` by <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}">${authorName}</a>`;
+    }
+    return ` by <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}">${authorTripHoppingUserId.slice(
+      0,
+      5
+    )}</a>`;
+  }
+  return "";
+}
+
 function generateContentFromNotes(notes: Note[]) {
   const lines = notes.reduce((existingLines, note) => {
-    const link =
-      typeof note.authorTrustrootsUsername === "string" &&
-      note.authorTrustrootsUsername.length > 3
-        ? ` by <a href="https://www.trustroots.org/profile/${note.authorTrustrootsUsername}">${note.authorName}</a>`
-        : "";
+    const link = generateLinkFromNote(note);
     const noteContent = `${note.content}${link}`;
     return existingLines.concat(noteContent);
   }, [] as string[]);

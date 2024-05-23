@@ -12,6 +12,7 @@ export type Note = {
   content: string;
   authorName: string;
   authorTrustrootsUsername: string;
+  authorTripHoppingUserId: string;
   authorPublicKey: string;
   authorNpubPublicKey: string;
 };
@@ -22,5 +23,6 @@ export type Profile = {
   name: string;
   about: string;
   trustrootsUsername: string;
+  tripHoppingUserId: string;
   picture: string;
 };
