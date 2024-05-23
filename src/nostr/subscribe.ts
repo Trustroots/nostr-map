@@ -14,7 +14,10 @@ const eventToNoteMinusProfile = ({
   event,
 }: {
   event: NostrEvent;
-}): Omit<Note, "authorName" | "authorTrustrootsUsername"> => {
+}): Omit<
+  Note,
+  "authorName" | "authorTrustrootsUsername" | "authorTripHoppingUserId"
+> => {
   const { id, kind, content } = event;
   // NOTE: We need to cast `note.kind` here because the `NostrEvent` type has a
   // enum for Kinds, which doesn't include our custom kind.
@@ -50,7 +53,13 @@ const eventToNote = ({
   const profile = profiles[baseNote.authorPublicKey];
   const authorName = profile?.name || "";
   const authorTrustrootsUsername = profile?.trustrootsUsername || "";
-  return { ...baseNote, authorName, authorTrustrootsUsername };
+  const authorTripHoppingUserId = profile?.tripHoppingUserId || "";
+  return {
+    ...baseNote,
+    authorName,
+    authorTrustrootsUsername,
+    authorTripHoppingUserId,
+  };
 };
 
 type SubscribeParams = {
@@ -125,6 +134,7 @@ export const subscribe = async ({
       !doesStringPassSanitisation(profile.name) ||
       !doesStringPassSanitisation(profile.about) ||
       !doesStringPassSanitisation(profile.trustrootsUsername) ||
+      !doesStringPassSanitisation(profile.tripHoppingUserId) ||
       !doesStringPassSanitisation(publicKey)
     ) {
       return;

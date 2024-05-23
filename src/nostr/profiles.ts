@@ -91,6 +91,7 @@ export const subscribeAndGetProfile = async ({
         npubPublicKey,
         name: "",
         trustrootsUsername: "",
+        tripHoppingUserId: "",
         about: "",
         picture: "",
       });
