@@ -116,7 +116,12 @@ export const sanitise = (input: string): string => {
   return sanitised;
 };
 
-export const doesStringPassSanitisation = (input: string): boolean => {
+export const doesStringPassSanitisation = (
+  input: string | undefined
+): boolean => {
+  if (typeof input === "undefined") {
+    return true;
+  }
   const sanitised = sanitise(input);
   return sanitised === input;
 };
