@@ -2,17 +2,13 @@ FROM node:20
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY src package.json yarn.lock ./
 
-# bugfix for npm using ssh even when https is specified
+# bugfix, stop npm from using ssh even when https is specified
 RUN git config --global url."https://".insteadOf ssh://
-
-RUN yarn global add parcel-bundler
-
-COPY . .
 
 RUN yarn install
 
-CMD ["yarn", "start"]
+CMD ["npm", "run", "start"]
 
 EXPOSE 1234
