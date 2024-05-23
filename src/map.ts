@@ -1,15 +1,11 @@
 import L from "leaflet";
 import "leaflet.sidepanel";
 import { decode, encode } from "pluscodes";
-import { getPublicKey, hasPrivateKey } from "./nostr/keys";
+import { hasPrivateKey } from "./nostr/keys";
 import { createNote } from "./nostr/notes";
 import { _initRelays } from "./nostr/relays";
 import { subscribe } from "./nostr/subscribe";
-import {
-  PANEL_CONTAINER_ID,
-  BADGE_CONTAINER_ID,
-  CURRENT_PUBLIC_KEY_ID,
-} from "./constants";
+import { PANEL_CONTAINER_ID, BADGE_CONTAINER_ID } from "./constants";
 import { Note } from "./types";
 
 const map = L.map("map", {
