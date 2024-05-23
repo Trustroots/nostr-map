@@ -134,6 +134,7 @@ export const subscribe = async ({
       !doesStringPassSanitisation(profile.name) ||
       !doesStringPassSanitisation(profile.about) ||
       !doesStringPassSanitisation(profile.trustrootsUsername) ||
+      profile.trustrootsUsername === "edit" ||
       !doesStringPassSanitisation(profile.tripHoppingUserId) ||
       !doesStringPassSanitisation(publicKey)
     ) {
