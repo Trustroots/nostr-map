@@ -63,7 +63,7 @@ export const setPrivateKey = async ({
   if (privateKey.length !== 64) {
     throw new Error("#irpzXh Private key is not 64 characters");
   }
-  localStorage.setItem(PRIVATE_KEY_STORAGE_KEY, privateKey);
+  await localStorage.setItem(PRIVATE_KEY_STORAGE_KEY, privateKey);
 };
 
 export const createPrivateKey = async () => {
