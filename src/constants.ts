@@ -7,3 +7,5 @@ export const MAP_NOTE_KIND = 397 as Kind;
 export const DEFAULT_RELAYS = ["wss://nos.lol"];
 export const PANEL_CONTAINER_ID = "panelID";
 export const BADGE_CONTAINER_ID = "badge";
+export const CONTENT_MINIMUM_LENGTH = 3;
+export const CONTENT_MAXIMUM_LENGTH = 300;

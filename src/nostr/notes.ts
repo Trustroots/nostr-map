@@ -1,5 +1,10 @@
 import { Event } from "nostr-tools";
-import { MAP_NOTE_KIND, PLUS_CODE_TAG_KEY } from "../constants";
+import {
+  CONTENT_MAXIMUM_LENGTH,
+  CONTENT_MINIMUM_LENGTH,
+  MAP_NOTE_KIND,
+  PLUS_CODE_TAG_KEY,
+} from "../constants";
 import { UnsignedEvent } from "../types";
 import { getPrivateKey } from "./keys";
 import { _publish } from "./relays";
@@ -20,7 +25,10 @@ export const createNote = async ({
   const key =
     typeof privateKey === "undefined" ? await getPrivateKey() : privateKey;
 
-  if (content.length < 3) {
+  if (
+    content.length < CONTENT_MINIMUM_LENGTH ||
+    content.length > CONTENT_MAXIMUM_LENGTH
+  ) {
     return;
   }
 
