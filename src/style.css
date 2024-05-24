@@ -1,6 +1,7 @@
 body {
   padding: 0;
   margin: 0;
+  border: 0;
 }
 html,
 body,
@@ -36,3 +37,40 @@ body,
   border-bottom-left-radius: 1em;
   border-bottom-right-radius: 1em;
 }
+ .header {
+            height: 40px;
+            background-color: #12b591;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            border: none;
+            box-sizing: border-box;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            border: none;
+        }
+        .header-content img {
+            height: 30px; /* Adjust the image height to fit within the header */
+            margin-right: 10px; /* Swapped position, so margin-right is used */
+            border: none;
+            vertical-align: middle;
+        }
+        .header-content a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            border: none;
+        }
+        .header-content span {
+            border: none;
+            line-height: 40px; /* Vertically center the text */
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            color: white; /* Set text color to white */
+            text-shadow: rgba(0, 0, 0, 0.3) 1px 1px 1px; /* Text shadow */
+        }
