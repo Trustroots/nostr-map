@@ -7,6 +7,7 @@ import { _initRelays } from "./nostr/relays";
 import { subscribe } from "./nostr/subscribe";
 import { PANEL_CONTAINER_ID, BADGE_CONTAINER_ID } from "./constants";
 import { Note } from "./types";
+import { startUserOnboarding } from "./onboarding";
 
 const map = L.map("map", {
   zoomControl: false,
@@ -50,8 +51,9 @@ const hackSidePanelClosed = () => {
 map.on("contextmenu", async (event) => {
   console.log("#bG7CWu Right clicked or long pressed");
   const isLoggedIn = await hasPrivateKey();
+
   if (!isLoggedIn) {
-    hackSidePanelOpen();
+    startUserOnboarding();
     return;
   }
 
