@@ -8,8 +8,9 @@ import {
   hasPrivateKey,
   setPrivateKey,
 } from "./nostr/keys";
-import { subscribeAndGetProfile, setProfile } from "./nostr/profiles";
+import { setProfile, subscribeAndGetProfile } from "./nostr/profiles";
 import { getTrustrootsUsernameFromLocation } from "./router";
+import { startWelcomeSequence } from "./welcome";
 
 export const startup = async () => {
   const isLoggedIn = await hasPrivateKey();
@@ -130,5 +131,7 @@ export const startup = async () => {
       globalThis.alert(`#vRuf1N Error saving relays\n${error.toString()}`);
     }
   };
+
+  startWelcomeSequence();
 };
 startup();
