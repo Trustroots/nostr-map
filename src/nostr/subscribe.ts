@@ -1,5 +1,9 @@
 import { Kind, Filter, nip19 } from "nostr-tools";
-import { MAP_NOTE_KIND, PLUS_CODE_TAG_KEY } from "../constants";
+import {
+  CONTENT_MAXIMUM_LENGTH,
+  MAP_NOTE_KIND,
+  PLUS_CODE_TAG_KEY,
+} from "../constants";
 import { NostrEvent, Note, Profile } from "../types";
 import { _subscribe } from "./relays";
 import {
@@ -100,6 +104,7 @@ export const subscribe = async ({
 
     if (
       !doesStringPassSanitisation(event.content) ||
+      event.content.length > CONTENT_MAXIMUM_LENGTH ||
       !doesStringPassSanitisation(event.pubkey)
     ) {
       return;
