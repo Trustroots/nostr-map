@@ -19,6 +19,11 @@ export const createNote = async ({
 }: CreateNoteParams) => {
   const key =
     typeof privateKey === "undefined" ? await getPrivateKey() : privateKey;
+
+  if (content.length < 3) {
+    return;
+  }
+
   const unsignedEvent: UnsignedEvent = {
     kind: MAP_NOTE_KIND,
     content,
