@@ -125,3 +125,24 @@ export const doesStringPassSanitisation = (
   const sanitised = sanitise(input);
   return sanitised === input;
 };
+
+export const isDev = (): boolean => {
+  if (window.location.host.includes("localhost")) {
+    return true;
+  }
+  return false;
+};
+
+export const isValidPlusCode = (input: string | undefined): boolean => {
+  if (typeof input === "undefined") {
+    return false;
+  }
+
+  const result = input.match(
+    /^[23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{4}[023456789CFGHJMPQRVWX]{2}\+[23456789CFGHJMPQRVWX]{0,3}$/
+  );
+  if (result !== null) {
+    return true;
+  }
+  return false;
+};

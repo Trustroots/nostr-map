@@ -7,8 +7,11 @@ import {
   getProfileFromEvent,
   getPublicKeyFromEvent,
   getTagFirstValueFromEvent,
+  isDev,
+  isValidPlusCode,
   uniq,
 } from "./utils";
+import { isValidAttribute } from "dompurify";
 
 const eventToNoteMinusProfile = ({
   event,
@@ -93,11 +96,20 @@ export const subscribe = async ({
   const noteEventsQueue: NostrEvent[] = [];
 
   const onNoteEvent = (event: NostrEvent) => {
-    // TODO Sanitise event
+    if (isDev()) console.log("#gITVd2 gotNoteEvent", event);
+
     if (
       !doesStringPassSanitisation(event.content) ||
       !doesStringPassSanitisation(event.pubkey)
     ) {
+      return;
+    }
+
+    const plusCode = getTagFirstValueFromEvent({
+      event,
+      tag: PLUS_CODE_TAG_KEY,
+    });
+    if (!isValidPlusCode(plusCode)) {
       return;
     }
 
@@ -127,6 +139,8 @@ export const subscribe = async ({
   };
 
   const onProfileEvent = (event: NostrEvent) => {
+    if (isDev()) console.log("#zD1Iau got profile event", event);
+
     const profile = getProfileFromEvent({ event });
     const publicKey = getPublicKeyFromEvent({ event });
 
