@@ -30,6 +30,7 @@
     "leaflet": "^1.9.3",
     "leaflet.sidepanel": "https://github.com/maxwell-ilai/Leaflet.SidePanel",
     "nostr-tools": "^1.2.1",
-    "pluscodes": "^2.6.0"
+    "pluscodes": "^2.6.0",
+    "sweetalert2": "^11.11.0"
   }
 }
