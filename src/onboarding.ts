@@ -1,5 +1,7 @@
 import { generatePrivateKey } from "nostr-tools";
 import { setPrivateKey } from "./nostr/keys";
+import { getTrustrootsUsernameFromLocation } from "./router";
+import { setProfile } from "./nostr";
 
 export const startUserOnboarding = async () => {
   if (globalThis.confirm("Have you used trustroots notes before?")) {
@@ -8,6 +10,9 @@ export const startUserOnboarding = async () => {
       await setPrivateKey({ privateKey: key });
       globalThis.alert(`Saved. Please right click again to add a note.`);
 
+      return;
+    } else {
+      globalThis.alert(`Private key failed.`);
       return;
     }
   }
@@ -53,7 +58,12 @@ export const startUserOnboarding = async () => {
 
   await setPrivateKey({ privateKey: newKey });
 
+  const trustrootsUsername = getTrustrootsUsernameFromLocation();
+  await setProfile({ name: "", about: "", trustrootsUsername });
+
   globalThis.alert(
     `Nice job. You're ready to create points now. Right click again to get started.`
   );
+
+  globalThis.window.location.reload();
 };

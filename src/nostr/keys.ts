@@ -71,3 +71,9 @@ export const createPrivateKey = async () => {
   await setPrivateKey({ privateKey });
   return privateKey;
 };
+
+export const unsetPrivateKey = async ({
+  localStorage = globalThis.localStorage,
+}: MaybeLocalStorage = {}) => {
+  await localStorage.removeItem(PRIVATE_KEY_STORAGE_KEY);
+};

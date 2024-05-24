@@ -1,4 +1,11 @@
-export const startWelcomeSequence = () => {
+import { hasPrivateKey } from "./nostr/keys";
+
+export const startWelcomeSequence = async () => {
+  const isLoggedIn = await hasPrivateKey();
+  if (isLoggedIn) {
+    return;
+  }
+
   if (
     !globalThis.confirm(
       "Welcome. This is experimental. Are you ready to get wild?"

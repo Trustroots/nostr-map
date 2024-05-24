@@ -7,10 +7,12 @@ import {
   getPublicKey,
   hasPrivateKey,
   setPrivateKey,
+  unsetPrivateKey,
 } from "./nostr/keys";
 import { setProfile, subscribeAndGetProfile } from "./nostr/profiles";
 import { getTrustrootsUsernameFromLocation } from "./router";
 import { startWelcomeSequence } from "./welcome";
+import { startUserOnboarding } from "./onboarding";
 
 export const startup = async () => {
   const isLoggedIn = await hasPrivateKey();
@@ -22,6 +24,12 @@ export const startup = async () => {
     L.DomUtil.addClass(loggedIn, "show");
     L.DomUtil.addClass(loggedOut, "hide");
 
+    const signoutButton = document.getElementById("signout")!;
+    signoutButton.onclick = async () => {
+      await unsetPrivateKey();
+      globalThis.location.reload();
+    };
+
     const publicKey = await getPublicKey();
     const npubPublicKey = await getNpubPublicKey();
     const nsecPrivateKey = await getNsecPrivateKey();
@@ -31,77 +39,13 @@ export const startup = async () => {
     const nsecPrivateKeyCode =
       globalThis.document.getElementById("nsecPrivateKey")!;
     nsecPrivateKeyCode.innerText = nsecPrivateKey;
-
-    const profileNameInput = document.getElementById(
-      "profile_name"
-    ) as HTMLInputElement;
-    const profileAboutInput = document.getElementById(
-      "profile_about"
-    ) as HTMLInputElement;
-    const profile = await subscribeAndGetProfile({ publicKey });
-    profileNameInput.value = profile.name;
-    profileAboutInput.value = profile.about;
-
-    const profileSubmitButton = document.getElementById("profile_submit")!;
-    profileSubmitButton.onclick = async (event) => {
-      event.preventDefault();
-      profileSubmitButton.setAttribute("disabled", "disabled");
-
-      const name = profileNameInput.value;
-      const about = profileAboutInput.value;
-      const trustrootsUsername = getTrustrootsUsernameFromLocation();
-
-      try {
-        await setProfile({ name, about, trustrootsUsername });
-
-        globalThis.alert("Your profile was updated.");
-        globalThis.document.location.reload();
-      } catch {
-        globalThis.alert("There was an error. Please try again.");
-        profileSubmitButton.removeAttribute("disabled");
-      }
-    };
   } else {
     L.DomUtil.addClass(loggedIn, "hide");
     L.DomUtil.addClass(loggedOut, "show");
 
-    const signupSubmit = document.getElementById("signup_submit")!;
-    signupSubmit.onclick = async (event) => {
-      event.preventDefault();
-      signupSubmit.setAttribute("disabled", "disabled");
-      const name = (document.getElementById("signup_name") as HTMLInputElement)
-        .value;
-      const about = (
-        document.getElementById("signup_about") as HTMLInputElement
-      ).value;
-
-      try {
-        await createPrivateKey();
-        const trustrootsUsername = getTrustrootsUsernameFromLocation();
-        setProfile({ name, about, trustrootsUsername }).then(() => {
-          globalThis.alert("Your account was created.");
-          globalThis.document.location.reload();
-        });
-      } catch {
-        signinSubmit.removeAttribute("disabled");
-      }
-    };
-
-    const signinSubmit = document.getElementById("signin_submit")!;
-    signinSubmit.onclick = async (event) => {
-      event.preventDefault();
-      signupSubmit.setAttribute("disabled", "disabled");
-      const privateKey = (
-        document.getElementById("signin_privateKey") as HTMLInputElement
-      ).value;
-
-      try {
-        setPrivateKey({ privateKey });
-        globalThis.alert("You were signed in successfully.");
-        globalThis.document.location.reload();
-      } catch {
-        signinSubmit.removeAttribute("disabled");
-      }
+    const signupButton = document.getElementById("signup")!;
+    signupButton.onclick = () => {
+      startUserOnboarding();
     };
   }
 

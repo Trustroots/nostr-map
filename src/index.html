@@ -31,25 +31,8 @@
           <div class="sidepanel-content-wrapper">
             <div class="sidepanel-content">
               <div id="loggedOut">
-                <h2>Sign up or sign in</h2>
-                <p>
-                  To save notes to the map, please create an account or login.
-                </p>
-
-                <h3>Sign up</h3>
-                <form>
-                  <p>Name: <input type="text" id="signup_name" /></p>
-                  <p>About: <input type="text" id="signup_about" /></p>
-                  <p><button id="signup_submit">Create account</button></p>
-                </form>
-
-                <h3>Sign in</h3>
-                <form>
-                  <p>
-                    Private key: <input type="text" id="signin_privateKey" />
-                  </p>
-                  <p><button id="signin_submit">Sign in</button></p>
-                </form>
+                <h2>Register</h2>
+                <p><button id="signup">Create an account</button></p>
               </div>
 
               <div id="loggedIn">
@@ -64,15 +47,7 @@
                   <p><code id="nsecPrivateKey" /></p>
                 </details>
 
-                <h2>Your profile</h2>
-                <details>
-                  <summary>Edit your profile here:</summary>
-                  <form>
-                    <p>Name: <input type="text" id="profile_name" /></p>
-                    <p>About: <input type="text" id="profile_about" /></p>
-                    <p><button id="profile_submit">Update profile</button></p>
-                  </form>
-                </details>
+                <p><button id="signout">Sign out</button></p>
               </div>
 
               <h2>Help</h2>
