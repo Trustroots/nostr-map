@@ -66,10 +66,10 @@ map.on("contextmenu", async (event) => {
 
   // Testing my edit capabilities with just this comment
   const coords = { latitude: event.latlng.lat, longitude: event.latlng.lng };
-  const plusCode = encode(coords, 11)!;
+  const plusCode = encode(coords, 10)!;
 
   // Create a marker instead of a polygon
-  const marker = L.marker(event.latlng, circleMarker);
+  const marker = L.circleMarker(event.latlng, circleMarker);
   marker.addTo(map);
 
   const createNoteCallback = async (content) => {
