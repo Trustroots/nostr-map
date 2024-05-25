@@ -59,12 +59,11 @@ map.on("contextmenu", async (event) => {
 
   // Testing my edit capabilities with just this comment
   const coords = { latitude: event.latlng.lat, longitude: event.latlng.lng };
-  const plusCode = encode(coords, 6)!;
+  const plusCode = encode(coords, 11)!; //changed from 6 to 11 precision
 
-  const selectedPlusCodePoly = generatePolygonFromPlusCode(plusCode);
-
-  selectedPlusCodePoly.setStyle({ color: "grey" });
-  selectedPlusCodePoly.addTo(map);
+  // Create a marker instead of a polygon
+    const marker = L.marker(event.latlng); 
+    marker.addTo(map);
 
   const createNoteCallback = async (content) => {
     createNote({ content, plusCode });
@@ -76,9 +75,10 @@ map.on("contextmenu", async (event) => {
     .setLatLng(event.latlng)
     .setContent(popupContent)
     .openOn(map)
-    .on("remove", (e) => selectedPlusCodePoly.remove());
+    .on("remove", (e) => marker.remove()); // Remove marker when popup is closed
 });
 
+// Not using this anymore, but might as well keep
 function generatePolygonFromPlusCode(plusCode: string) {
   const decoded = decode(plusCode);
   const { resolution: res, longitude: cLong, latitude: cLat } = decoded!;
@@ -146,14 +146,15 @@ function addNoteToMap(note: Note) {
     const notes = [...existing.notes, note];
     popup.setContent(generateContentFromNotes(notes));
   } else {
-    const poly = generatePolygonFromPlusCode(note.plusCode);
-    poly.setStyle({ color: "blue" });
-    poly.addTo(map);
+
+
+    const marker = L.marker(decode(note.plusCode)); // Decode pluscode to get coordinates
+    marker.addTo(map);
 
     const content = generateContentFromNotes([note]);
     const popup = L.popup().setContent(content);
-    poly.bindPopup(popup);
-    poly.on("click", () => poly.openPopup());
+    marker.bindPopup(popup);
+    marker.on("click", () => marker.openPopup());
     plusCodesWithPopupsAndNotes[note.plusCode] = {
       popup,
       notes: [note],
