@@ -47,6 +47,11 @@ body,
   padding: 0;
   border: none;
   box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  z-index: 10000;
 }
 .header-content {
   display: flex;
