@@ -52,6 +52,9 @@ body,
             display: flex;
             align-items: center;
             border: none;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1170px;
         }
         .header-content img {
             height: 30px; /* Adjust the image height to fit within the header */
