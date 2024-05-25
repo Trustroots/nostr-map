@@ -57,7 +57,7 @@ map.on("contextmenu", async (event) => {
     return;
   }
 
-  // Testing my edit capabilities with just this comment
+  // Testing my edit capabilities with just this comment, testing a branch
   const coords = { latitude: event.latlng.lat, longitude: event.latlng.lng };
   const plusCode = encode(coords, 6)!;
 
