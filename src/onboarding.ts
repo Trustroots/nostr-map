@@ -1,8 +1,7 @@
-import Swal from "sweetalert2";
 import { generatePrivateKey } from "nostr-tools";
+import { setProfile } from "./nostr";
 import { setPrivateKey } from "./nostr/keys";
 import { getTrustrootsUsernameFromLocation } from "./router";
-import { setProfile } from "./nostr";
 import { alert, confirmYesNo, prompt } from "./utils";
 
 export const startUserOnboarding = async () => {
