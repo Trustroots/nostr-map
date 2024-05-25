@@ -29,6 +29,13 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
+const circleMarker = {
+  color: 'purple',
+  fillColor: '#A020F0',
+  fillOpacity: 0.5,
+  radius: 8
+};
+
 // NOTE: The leaflet sidepanel plugin doesn't have types in `@types/leaflet` and
 // so we need to cast to any here.
 
@@ -59,12 +66,11 @@ map.on("contextmenu", async (event) => {
 
   // Testing my edit capabilities with just this comment
   const coords = { latitude: event.latlng.lat, longitude: event.latlng.lng };
-  const plusCode = encode(coords, 6)!;
+  const plusCode = encode(coords, 11)!;
 
-  const selectedPlusCodePoly = generatePolygonFromPlusCode(plusCode);
-
-  selectedPlusCodePoly.setStyle({ color: "grey" });
-  selectedPlusCodePoly.addTo(map);
+  // Create a marker instead of a polygon
+  const marker = L.marker(event.latlng, circleMarker);
+  marker.addTo(map);
 
   const createNoteCallback = async (content) => {
     createNote({ content, plusCode });
@@ -76,7 +82,7 @@ map.on("contextmenu", async (event) => {
     .setLatLng(event.latlng)
     .setContent(popupContent)
     .openOn(map)
-    .on("remove", (e) => selectedPlusCodePoly.remove());
+    .on("remove", (e) => marker.remove());
 });
 
 function generatePolygonFromPlusCode(plusCode: string) {
@@ -146,14 +152,15 @@ function addNoteToMap(note: Note) {
     const notes = [...existing.notes, note];
     popup.setContent(generateContentFromNotes(notes));
   } else {
-    const poly = generatePolygonFromPlusCode(note.plusCode);
-    poly.setStyle({ color: "blue" });
-    poly.addTo(map);
+    const decodedCoords = decode(note.plusCode);
+    const { resolution: res, longitude: cLong, latitude: cLat } = decodedCoords!;
+    const marker = L.circleMarker([cLat, cLong], circleMarker); // Create marker with decoded coordinates
+    marker.addTo(map);
 
     const content = generateContentFromNotes([note]);
     const popup = L.popup().setContent(content);
-    poly.bindPopup(popup);
-    poly.on("click", () => poly.openPopup());
+    marker.bindPopup(popup);
+    marker.on("click", () => marker.openPopup());
     plusCodesWithPopupsAndNotes[note.plusCode] = {
       popup,
       notes: [note],
