@@ -11,7 +11,7 @@ import { startUserOnboarding } from "./onboarding";
 
 const map = L.map("map", {
   zoomControl: false,
-}).setView([51.505, -0.09], 11);
+}).setView([0, 0], 2);
 
 L.control
   .zoom({
