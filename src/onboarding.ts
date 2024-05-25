@@ -6,6 +6,12 @@ import { setProfile } from "./nostr";
 import { alert, confirmYesNo, prompt } from "./utils";
 
 export const startUserOnboarding = async () => {
+  const username = getTrustrootsUsernameFromLocation();
+  if (username.length < 3) {
+    alert(`Sorry, you need to click to this page from trustroots.org.`);
+    return;
+  }
+
   if (await confirmYesNo("Have you used trustroots notes before?")) {
     const key = await prompt({
       text: `Great. What's your private key?`,
@@ -24,11 +30,11 @@ export const startUserOnboarding = async () => {
 
   if (
     !(await confirmYesNo(
-      "Ready to share your data with sites like triphopping.com?"
+      `Notes shared here are public and accessible to other services, sites and maps. I agree?`
     ))
   ) {
     await alert(
-      `Okay, this is not the demo for you. We'll take you back to trustroots now.`
+      `This will become more user friendly in the future. Feel free to come back anytime. Now we'll take you back to the main trustroots site.`
     );
     globalThis.location.href = "https://www.trustroots.org/search";
     return;
@@ -36,28 +42,28 @@ export const startUserOnboarding = async () => {
 
   if (
     !(await confirmYesNo(
-      `Happy to post content which you can't get back, edit or delete?`
+      `Notes cannot me edited or deleted. Are you ok with this?`
     ))
   ) {
-    await alert(`Sorry, we're not ready for you yet.`);
-    return;
-  }
-
-  if (!(await confirmYesNo(`Ready to manage your own key?`))) {
     await alert(
-      `Sorry, we haven't built the key management yet. Please try again later.`
+      `This will become more user friendly in the future. Feel free to come back anytime. Now we'll take you back to the main trustroots site.`
     );
     return;
   }
 
   const newKey = await generatePrivateKey();
-  await prompt({ text: `Here's your key. Save it.`, inputValue: newKey });
+  await prompt({
+    text: `This is your NOSTR private key. It is important that you save it somewhere safe. THIS KEY IS PRIVATE: DO NOT SHARE IT WITH ANYONE ELSE. `,
+    inputValue: newKey,
+  });
   const confirmedKey = await prompt({
-    text: `You saved it right? Please paste it back here just to check.`,
+    text: `You saved it, right. Please re-enter your NOSTR private key.`,
   });
 
   if (newKey !== confirmedKey) {
-    await alert(`Sorry, those didn't match.`);
+    await alert(
+      `The private key that you entered is not the same one as the one issued to you. Right click (or long press) to start the process again.`
+    );
     return;
   }
 
