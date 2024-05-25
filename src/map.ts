@@ -1,13 +1,13 @@
 import L from "leaflet";
 import "leaflet.sidepanel";
 import { decode, encode } from "pluscodes";
+import { BADGE_CONTAINER_ID, PANEL_CONTAINER_ID } from "./constants";
 import { hasPrivateKey } from "./nostr/keys";
 import { createNote } from "./nostr/notes";
 import { _initRelays } from "./nostr/relays";
 import { subscribe } from "./nostr/subscribe";
-import { PANEL_CONTAINER_ID, BADGE_CONTAINER_ID } from "./constants";
-import { Note } from "./types";
 import { startUserOnboarding } from "./onboarding";
+import { Note } from "./types";
 
 const map = L.map("map", {
   zoomControl: false,
@@ -29,12 +29,14 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
+// NOTE: None of these properties are recognised by the `@types/leaflet` types,
+// so we cast to `L.MarkerOptions` here.
 const circleMarker = {
-  color: 'purple',
-  fillColor: '#A020F0',
+  color: "purple",
+  fillColor: "#A020F0",
   fillOpacity: 0.5,
-  radius: 8
-};
+  radius: 8,
+} as L.MarkerOptions;
 
 // NOTE: The leaflet sidepanel plugin doesn't have types in `@types/leaflet` and
 // so we need to cast to any here.
@@ -66,7 +68,11 @@ map.on("contextmenu", async (event) => {
 
   // Testing my edit capabilities with just this comment
   const coords = { latitude: event.latlng.lat, longitude: event.latlng.lng };
-  const plusCode = encode(coords, 11)!;
+  const plusCode = encode(coords, 10);
+
+  if (plusCode === null) {
+    throw new Error("#gssRRU Got null for plusCode");
+  }
 
   // Create a marker instead of a polygon
   const marker = L.marker(event.latlng, circleMarker);
@@ -153,7 +159,11 @@ function addNoteToMap(note: Note) {
     popup.setContent(generateContentFromNotes(notes));
   } else {
     const decodedCoords = decode(note.plusCode);
-    const { resolution: res, longitude: cLong, latitude: cLat } = decodedCoords!;
+    const {
+      resolution: res,
+      longitude: cLong,
+      latitude: cLat,
+    } = decodedCoords!;
     const marker = L.circleMarker([cLat, cLong], circleMarker); // Create marker with decoded coordinates
     marker.addTo(map);
 
