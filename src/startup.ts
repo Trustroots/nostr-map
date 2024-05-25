@@ -1,21 +1,24 @@
 import * as L from "leaflet";
 import { getRelays, setRelays } from "./nostr";
 import {
-  createPrivateKey,
   getNpubPublicKey,
   getNsecPrivateKey,
   getPublicKey,
   hasPrivateKey,
-  setPrivateKey,
   unsetPrivateKey,
 } from "./nostr/keys";
-import { setProfile, subscribeAndGetProfile } from "./nostr/profiles";
-import { getTrustrootsUsernameFromLocation } from "./router";
-import { startWelcomeSequence } from "./welcome";
 import { startUserOnboarding } from "./onboarding";
+import { startWelcomeSequence } from "./welcome";
+import { hackSidePanelClosed, hackSidePanelOpen } from "./map";
 
 export const startup = async () => {
   const isLoggedIn = await hasPrivateKey();
+
+  const helpLink = document.getElementById("help")!;
+  helpLink.onclick = (event) => {
+    event.preventDefault();
+    hackSidePanelOpen();
+  };
 
   const loggedIn = L.DomUtil.get("loggedIn")!;
   const loggedOut = L.DomUtil.get("loggedOut")!;
@@ -46,6 +49,7 @@ export const startup = async () => {
     const signupButton = document.getElementById("signup")!;
     signupButton.onclick = () => {
       startUserOnboarding();
+      hackSidePanelClosed();
     };
   }
 

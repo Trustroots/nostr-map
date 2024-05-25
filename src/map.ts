@@ -35,14 +35,14 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 (L.control as any).sidepanel(PANEL_CONTAINER_ID, { hasTabs: true }).addTo(map);
 
 // The leaflet sidepanel plugin doesn't export an API, so we've written our own
-const hackSidePanelOpen = () => {
+export const hackSidePanelOpen = () => {
   const panel = L.DomUtil.get(PANEL_CONTAINER_ID);
   L.DomUtil.removeClass(panel!, "closed");
   L.DomUtil.addClass(panel!, "opened");
 };
 
 // The leaflet sidepanel plugin doesn't export an API, so we've written our own
-const hackSidePanelClosed = () => {
+export const hackSidePanelClosed = () => {
   const panel = L.DomUtil.get(PANEL_CONTAINER_ID);
   L.DomUtil.removeClass(panel!, "opened");
   L.DomUtil.addClass(panel!, "closed");
