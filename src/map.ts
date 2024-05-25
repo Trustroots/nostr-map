@@ -75,7 +75,7 @@ map.on("contextmenu", async (event) => {
   }
 
   // Create a marker instead of a polygon
-  const marker = L.marker(event.latlng, circleMarker);
+  const marker = L.circleMarker(event.latlng, circleMarker);
   marker.addTo(map);
 
   const createNoteCallback = async (content) => {
