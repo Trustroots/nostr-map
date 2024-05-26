@@ -7,8 +7,9 @@ import {
   nip26,
   signEvent,
 } from "nostr-tools";
-import { NostrEvent, Profile, UnsignedEvent } from "../types";
+import Swal from "sweetalert2";
 import { getTrustrootsUsernameFromLocation } from "../router";
+import { NostrEvent, Profile, UnsignedEvent } from "../types";
 import { setProfile } from "./profiles";
 
 export const dateToUnix = (_date?: Date) => {
@@ -151,6 +152,10 @@ export const isValidPlusCode = (input: string | undefined): boolean => {
 
 export const resendKindZero = async () => {
   const trustrootsUsername = getTrustrootsUsernameFromLocation();
+  if (trustrootsUsername.length < 3) {
+    Swal.fire({ text: "Please click the link from www.trustroots.org again." });
+    return;
+  }
   await setProfile({ name: "", about: "", trustrootsUsername });
   return "#6hMURG success";
 };
