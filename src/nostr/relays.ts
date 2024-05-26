@@ -55,7 +55,8 @@ export const setRelays = async ({
   relays,
   localStorage = globalThis.localStorage,
 }: SetRelaysParams & MaybeLocalStorage): Promise<void> => {
-  const relaysString = JSON.stringify(relays);
+  const relaysToSet = relays.length > 0 ? relays : DEFAULT_RELAYS;
+  const relaysString = JSON.stringify(relaysToSet);
   localStorage.setItem(RELAYS_STORAGE_KEY, relaysString);
   return;
 };
