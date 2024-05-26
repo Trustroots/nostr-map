@@ -1,6 +1,7 @@
 import { Kind, Filter, nip19 } from "nostr-tools";
 import {
   CONTENT_MAXIMUM_LENGTH,
+  EARLIEST_FILTER_SINCE,
   MAP_NOTE_KIND,
   PLUS_CODE_TAG_KEY,
 } from "../constants";
@@ -90,7 +91,13 @@ export const subscribe = async ({
 
   const getEventsForSpecificAuthor = typeof publicKey !== "undefined";
 
-  const eventsBaseFilter = { kinds: [MAP_NOTE_KIND] };
+  const oneMonthInSeconds = 30 * 24 * 60 * 60;
+  const oneMonthAgo = Math.round(Date.now() / 1e3) - oneMonthInSeconds;
+  const since = Math.max(EARLIEST_FILTER_SINCE, oneMonthAgo);
+  const eventsBaseFilter = {
+    kinds: [MAP_NOTE_KIND],
+    since,
+  };
 
   const eventsFilter: Filter = getEventsForSpecificAuthor
     ? { ...eventsBaseFilter, authors: [publicKey] }
