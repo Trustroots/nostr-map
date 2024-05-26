@@ -2,7 +2,9 @@ import { Event } from "nostr-tools";
 import {
   CONTENT_MAXIMUM_LENGTH,
   CONTENT_MINIMUM_LENGTH,
+  LABEL_NAMESPACE_TAG,
   MAP_NOTE_KIND,
+  OPEN_LOCATION_CODE_NAMESPACE_TAG,
   PLUS_CODE_TAG_KEY,
 } from "../constants";
 import { UnsignedEvent } from "../types";
@@ -35,7 +37,10 @@ export const createNote = async ({
   const unsignedEvent: UnsignedEvent = {
     kind: MAP_NOTE_KIND,
     content,
-    tags: [[PLUS_CODE_TAG_KEY, plusCode]],
+    tags: [
+      [LABEL_NAMESPACE_TAG, OPEN_LOCATION_CODE_NAMESPACE_TAG],
+      [PLUS_CODE_TAG_KEY, plusCode, OPEN_LOCATION_CODE_NAMESPACE_TAG],
+    ],
   };
   const signedEvent = signEventWithPrivateKey({
     unsignedEvent,
