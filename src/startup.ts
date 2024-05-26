@@ -11,6 +11,7 @@ import {
 } from "./nostr/keys";
 import { startUserOnboarding } from "./onboarding";
 import { startWelcomeSequence } from "./welcome";
+import { getDefaultRelays } from "./nostr/relays";
 
 // This is supported by parcel, our build system, but not recognised by
 // typescript, so we declare it here so that we can use it below.
@@ -82,7 +83,7 @@ export const startup = async () => {
         return;
       }
       const relays =
-        relaysFromJson.length === 0 ? DEFAULT_RELAYS : relaysFromJson;
+        relaysFromJson.length === 0 ? getDefaultRelays() : relaysFromJson;
       await setRelays({ relays });
       globalThis.alert("Relays saved.");
       globalThis.document.location.reload();

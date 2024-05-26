@@ -69,8 +69,7 @@ export const startUserOnboarding = async () => {
 
   await setPrivateKey({ privateKey: newKey });
 
-  const trustrootsUsername = getTrustrootsUsernameFromLocation();
-  await setProfile({ name: "", about: "", trustrootsUsername });
+  await setProfile({ name: "", about: "", trustrootsUsername: username });
 
   await alert(
     `Nice job. You're ready to create points now. Right click again to get started.`

@@ -134,10 +134,15 @@ export const _subscribe = async ({
   return subscriptions;
 };
 
+export const getDefaultRelays = () => {
+  const relays = isDev() ? DEV_RELAYS : DEFAULT_RELAYS;
+  return relays;
+};
+
 export const createRelays = async () => {
   const relaysInstalled = await hasRelays();
   if (!relaysInstalled) {
-    const relays = isDev() ? DEV_RELAYS : DEFAULT_RELAYS;
-    await setRelays({ relays });
+    const relays = getDefaultRelays();
+    setRelays({ relays });
   }
 };
