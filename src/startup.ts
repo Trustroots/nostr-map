@@ -12,6 +12,10 @@ import {
 import { startUserOnboarding } from "./onboarding";
 import { startWelcomeSequence } from "./welcome";
 
+// This is supported by parcel, our build system, but not recognised by
+// typescript, so we declare it here so that we can use it below.
+declare const process;
+
 export const startup = async () => {
   const isLoggedIn = await hasPrivateKey();
 
@@ -20,6 +24,11 @@ export const startup = async () => {
     event.preventDefault();
     hackSidePanelOpen();
   };
+
+  const buildIdSpan = document.getElementById("build-id");
+  if (buildIdSpan !== null) {
+    buildIdSpan.textContent = process.env.GITHUB_SHA || "dev";
+  }
 
   const loggedIn = L.DomUtil.get("loggedIn")!;
   const loggedOut = L.DomUtil.get("loggedOut")!;
