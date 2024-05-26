@@ -66,6 +66,17 @@ export const setPrivateKey = async ({
   await localStorage.setItem(PRIVATE_KEY_STORAGE_KEY, privateKey);
 };
 
+export const setNsecPrivateKey = async ({
+  nsecPrivateKey,
+  localStorage = globalThis.localStorage,
+}: { nsecPrivateKey: string } & MaybeLocalStorage) => {
+  const { type, data } = nip19.decode(nsecPrivateKey);
+  if (type !== "nsec") {
+    throw new Error("#wpl4sI not-valid-nsec");
+  }
+  return setPrivateKey({ privateKey: data as string, localStorage });
+};
+
 export const createPrivateKey = async () => {
   const privateKey = generatePrivateKey();
   await setPrivateKey({ privateKey });

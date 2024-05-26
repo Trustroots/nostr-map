@@ -1,6 +1,6 @@
-import { generatePrivateKey } from "nostr-tools";
+import { generatePrivateKey, nip19 } from "nostr-tools";
 import { setProfile } from "./nostr";
-import { setPrivateKey } from "./nostr/keys";
+import { setNsecPrivateKey, setPrivateKey } from "./nostr/keys";
 import { getTrustrootsUsernameFromLocation } from "./router";
 import { alert, confirmYesNo, prompt } from "./utils";
 
@@ -17,7 +17,7 @@ export const startUserOnboarding = async () => {
       inputLabel: "Your private key (starts nsec)",
     });
     if (typeof key === "string" && key.length > 0 && key.startsWith("nsec")) {
-      await setPrivateKey({ privateKey: key });
+      await setNsecPrivateKey({ nsecPrivateKey: key });
       alert(`Saved. Please right click again to add a note.`);
       globalThis.location.reload();
       return;
@@ -51,15 +51,16 @@ export const startUserOnboarding = async () => {
   }
 
   const newKey = await generatePrivateKey();
+  const newKeyNsec = nip19.nsecEncode(newKey);
   await prompt({
     text: `This is your NOSTR private key. It is important that you save it somewhere safe. THIS KEY IS PRIVATE: DO NOT SHARE IT WITH ANYONE ELSE. `,
-    inputValue: newKey,
+    inputValue: newKeyNsec,
   });
   const confirmedKey = await prompt({
     text: `You saved it, right. Please re-enter your NOSTR private key.`,
   });
 
-  if (newKey !== confirmedKey) {
+  if (newKeyNsec !== confirmedKey) {
     await alert(
       `The private key that you entered is not the same one as the one issued to you. Right click (or long press) to start the process again.`
     );
