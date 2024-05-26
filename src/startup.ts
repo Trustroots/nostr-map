@@ -1,4 +1,6 @@
 import * as L from "leaflet";
+import { DEFAULT_RELAYS } from "./constants";
+import { hackSidePanelClosed, hackSidePanelOpen } from "./map";
 import { getRelays, setRelays } from "./nostr";
 import {
   getNpubPublicKey,
@@ -9,7 +11,6 @@ import {
 } from "./nostr/keys";
 import { startUserOnboarding } from "./onboarding";
 import { startWelcomeSequence } from "./welcome";
-import { hackSidePanelClosed, hackSidePanelOpen } from "./map";
 
 export const startup = async () => {
   const isLoggedIn = await hasPrivateKey();
@@ -65,12 +66,14 @@ export const startup = async () => {
 
     const relaysJson = relaysInput.value;
     try {
-      const relays = JSON.parse(relaysJson) as string[];
-      if (!Array.isArray(relays) || relays.length === 0) {
+      const relaysFromJson = JSON.parse(relaysJson) as string[];
+      if (!Array.isArray(relaysFromJson)) {
         relaySubmitButton.removeAttribute("disabled");
         globalThis.alert("Invalid relays submitted. Please try again.");
         return;
       }
+      const relays =
+        relaysFromJson.length === 0 ? DEFAULT_RELAYS : relaysFromJson;
       await setRelays({ relays });
       globalThis.alert("Relays saved.");
       globalThis.document.location.reload();
