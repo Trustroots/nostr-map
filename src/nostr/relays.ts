@@ -1,6 +1,7 @@
-import { Sub, relayInit, Relay, Event, Filter } from "nostr-tools";
-import { DEFAULT_RELAYS, RELAYS_STORAGE_KEY } from "../constants";
+import { Event, Filter, Relay, Sub, relayInit } from "nostr-tools";
+import { DEFAULT_RELAYS, DEV_RELAYS, RELAYS_STORAGE_KEY } from "../constants";
 import { MaybeLocalStorage, NostrEvent } from "../types";
+import { isDev } from "./utils";
 
 const relays: Relay[] = [];
 globalThis.relays = relays;
@@ -136,6 +137,7 @@ export const _subscribe = async ({
 export const createRelays = async () => {
   const relaysInstalled = await hasRelays();
   if (!relaysInstalled) {
-    await setRelays({ relays: DEFAULT_RELAYS });
+    const relays = isDev() ? DEV_RELAYS : DEFAULT_RELAYS;
+    await setRelays({ relays });
   }
 };
