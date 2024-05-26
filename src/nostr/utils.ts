@@ -8,6 +8,8 @@ import {
   signEvent,
 } from "nostr-tools";
 import { NostrEvent, Profile, UnsignedEvent } from "../types";
+import { getTrustrootsUsernameFromLocation } from "../router";
+import { setProfile } from "./profiles";
 
 export const dateToUnix = (_date?: Date) => {
   const date = _date || new Date();
@@ -146,3 +148,10 @@ export const isValidPlusCode = (input: string | undefined): boolean => {
   }
   return false;
 };
+
+export const resendKindZero = async () => {
+  const trustrootsUsername = getTrustrootsUsernameFromLocation();
+  await setProfile({ name: "", about: "", trustrootsUsername });
+  return "#6hMURG success";
+};
+(globalThis.window as any).resendKindZero = resendKindZero;
