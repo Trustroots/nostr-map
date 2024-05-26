@@ -61,8 +61,6 @@ export const startup = async () => {
       startUserOnboarding();
       hackSidePanelClosed();
     };
-
-    startWelcomeSequence();
   }
 
   const relaysInput = document.getElementById("relays") as HTMLInputElement;
@@ -93,5 +91,7 @@ export const startup = async () => {
       globalThis.alert(`#vRuf1N Error saving relays\n${error.toString()}`);
     }
   };
+
+  startWelcomeSequence();
 };
 startup();
