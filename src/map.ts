@@ -115,16 +115,16 @@ function generateLinkFromNote(note: Note): string {
 
   if (authorTrustrootsUsername.length > 3) {
     if (authorName.length > 1) {
-      return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}">${authorName}</a>`;
+      return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorName}</a>`;
     }
-    return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}">${authorTrustrootsUsername}</a>`;
+    return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorTrustrootsUsername}</a>`;
   }
 
   if (authorTripHoppingUserId.length > 3) {
     if (authorName.length > 1) {
-      return ` by <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}">${authorName}</a>`;
+      return ` by <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorName}</a>`;
     }
-    return ` by <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}">${authorTripHoppingUserId.slice(
+    return ` by <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorTripHoppingUserId.slice(
       0,
       5
     )}</a>`;
