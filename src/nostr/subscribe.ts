@@ -94,8 +94,9 @@ export const subscribe = async ({
   const oneMonthInSeconds = 30 * 24 * 60 * 60;
   const oneMonthAgo = Math.round(Date.now() / 1e3) - oneMonthInSeconds;
   const since = Math.max(EARLIEST_FILTER_SINCE, oneMonthAgo);
-  const eventsBaseFilter = {
+  const eventsBaseFilter: Filter = {
     kinds: [MAP_NOTE_KIND],
+    "#L": ["open-location-code"],
     since,
   };
 
