@@ -143,6 +143,15 @@ function generateContentFromNotes(notes: Note[]) {
 }
 
 function addNoteToMap(note: Note) {
+
+  // Check if the note has a tr/th author before adding to the map
+  const { authorName, authorTrustrootsUsername, authorTripHoppingUserId } =
+      note;
+
+  if(authorTrustrootsUsername.length<3 && authorTripHoppingUserId.length<3) {
+    return;
+  }
+
   let existing = plusCodesWithPopupsAndNotes[note.plusCode];
 
   if (existing) {
