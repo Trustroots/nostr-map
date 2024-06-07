@@ -13,5 +13,17 @@ This is running at [notes.trustroots.org](https://notes.trustroots.org/). And it
 - Open http://localhost:1234
 
 
+## Some ideas
 
-https://github.com/Trustroots/nostroots
+- filters
+  - [ ] user on trustroots?
+  - [ ] filter on hashtags
+- add a chat
+  - only show notes in the part of the map that is visible
+  - bridge to signal/matrix hitchwiki chat
+- rideshare related tags
+- update location with regular interval
+- event hashtags
+- pull in data from https://hitchmap.com/
+  
+
