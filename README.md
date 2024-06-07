@@ -13,17 +13,12 @@ This is running at [notes.trustroots.org](https://notes.trustroots.org/). And it
 - Open http://localhost:1234
 
 
-## Some ideas
+## Ideas
+somewhat concrete:
+- [filters](https://github.com/Trustroots/nostr-map/issues/13)
+- [chat](https://github.com/Trustroots/nostr-map/issues/14)
 
-- filters
-  - [ ] user on trustroots?
-  - [ ] filter on hashtags
-- add a chat
-  - only show notes in the part of the map that is visible
-  - bridge to signal/matrix hitchwiki chat
+vague-ish:
 - rideshare related tags
 - update location with regular interval
-- event hashtags
-- pull in data from https://hitchmap.com/
-  
-
+- hashtags, e.g. for circles or events, #hg24 for hitchgathering 2024?
