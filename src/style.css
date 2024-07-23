@@ -81,3 +81,8 @@ body,
   color: white;
   border: none;
 }
+#geochat-notes {
+  list-style-type: none;
+  padding-left: 0;
+  margin-left: 0;
+}

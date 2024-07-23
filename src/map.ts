@@ -58,7 +58,6 @@ export const hackSidePanelClosed = () => {
 };
 
 map.on("contextmenu", async (event) => {
-  console.log("#bG7CWu Right clicked or long pressed");
   const isLoggedIn = await hasPrivateKey();
 
   if (!isLoggedIn) {
@@ -123,7 +122,6 @@ function generateDatetimeFromNote(note: Note): string {
   // Format the date and time strings
   const datetime = `${hours}:${minutes} ${day}-${month}`;
 
-  console.log("createdAt", datetime);
   return datetime;
 }
 
@@ -132,16 +130,16 @@ function generateLinkFromNote(note: Note): string {
     note;
   if (authorTrustrootsUsername.length > 3) {
     if (authorName.length > 1) {
-      return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorName}</a>`;
+      return ` <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorName}</a>`;
     }
-    return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorTrustrootsUsername}</a>`;
+    return ` <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorTrustrootsUsername}</a>`;
   }
 
   if (authorTripHoppingUserId.length > 3) {
     if (authorName.length > 1) {
-      return ` by <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorName}</a>`;
+      return ` <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorName}</a>`;
     }
-    return ` by <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorTripHoppingUserId.slice(
+    return ` <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorTripHoppingUserId.slice(
       0,
       5
     )}</a>`;
@@ -149,7 +147,7 @@ function generateLinkFromNote(note: Note): string {
   return "";
 }
 
-function generateContentFromNotes(notes: Note[]) {
+function generateMapContentFromNotes(notes: Note[]) {
   const lines = notes.reduce((existingLines, note) => {
     const link = generateLinkFromNote(note);
     const datetime = generateDatetimeFromNote(note);
@@ -159,6 +157,19 @@ function generateContentFromNotes(notes: Note[]) {
   const content = lines.join("<br />");
   return content;
 }
+
+// todo: needs to be DRYed up
+function generateChatContentFromNotes(notes: Note[]) {
+  const lines = notes.reduce((existingLines, note) => {
+    const link = generateLinkFromNote(note);
+    const datetime = generateDatetimeFromNote(note);
+    const noteContent = `${datetime}, ${link}: ${note.content}`;
+    return existingLines.concat(noteContent);
+  }, [] as string[]);
+  const content = lines.join("<br />");
+  return content;
+}
+
 
 function addNoteToMap(note: Note) {
   let existing = plusCodesWithPopupsAndNotes[note.plusCode];
@@ -174,7 +185,7 @@ function addNoteToMap(note: Note) {
     }
 
     const notes = [...existing.notes, note];
-    popup.setContent(generateContentFromNotes(notes));
+    popup.setContent(generateMapContentFromNotes(notes));
   } else {
     const decodedCoords = decode(note.plusCode);
     const {
@@ -185,8 +196,17 @@ function addNoteToMap(note: Note) {
     const marker = L.circleMarker([cLat, cLong], circleMarker); // Create marker with decoded coordinates
     marker.addTo(map);
 
-    const content = generateContentFromNotes([note]);
-    const popup = L.popup().setContent(content);
+    const contentMap = generateMapContentFromNotes([note]);
+    const contentChat = generateChatContentFromNotes([note]);
+    
+    //todo: rename addNoteToMap and other map 
+    console.log(note);
+    const geochatNotes = document.getElementById("geochat-notes");
+    const li = document.createElement("li");
+    li.innerHTML = contentChat;
+    geochatNotes.appendChild(li);
+
+    const popup = L.popup().setContent(contentMap);
     marker.bindPopup(popup);
     marker.on("click", () => marker.openPopup());
     plusCodesWithPopupsAndNotes[note.plusCode] = {

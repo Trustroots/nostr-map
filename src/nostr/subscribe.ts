@@ -86,7 +86,7 @@ export const subscribe = async ({
   onNoteReceived,
   limit = 200,
 }: SubscribeParams) => {
-  console.log("#qnvvsm nostr/subscribe", publicKey);
+  // console.log("#qnvvsm nostr/subscribe", publicKey);
   let gotNotesEose = false;
   let gotPromiseEose = false;
   const profiles: { [publicKey: string]: Profile } = {};
@@ -110,7 +110,7 @@ export const subscribe = async ({
   const noteEventsQueue: NostrEvent[] = [];
 
   const onNoteEvent = (event: NostrEvent) => {
-    if (isDev()) console.log("#gITVd2 gotNoteEvent", event);
+    // if (isDev()) console.log("#gITVd2 gotNoteEvent", event);
 
     if (
       !doesStringPassSanitisation(event.content) ||
@@ -154,7 +154,7 @@ export const subscribe = async ({
   };
 
   const onProfileEvent = (event: NostrEvent) => {
-    if (isDev()) console.log("#zD1Iau got profile event", event);
+    // if (isDev()) console.log("#zD1Iau got profile event", event);
 
     const profile = getProfileFromEvent({ event });
     const publicKey = getPublicKeyFromEvent({ event });
