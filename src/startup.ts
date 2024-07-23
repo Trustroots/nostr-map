@@ -49,7 +49,11 @@ export const startup = async () => {
     const nsecPrivateKey = await getNsecPrivateKey();
 
     const publicKeyCode = globalThis.document.getElementById("npubPublicKey")!;
-    publicKeyCode.innerText = npubPublicKey;
+    const link = document.createElement("a");
+    link.href = `https://njump.me/${npubPublicKey}`;
+    link.target = "_blank";
+    link.innerText = npubPublicKey;
+    publicKeyCode.appendChild(link);
     const nsecPrivateKeyCode =
       globalThis.document.getElementById("nsecPrivateKey")!;
     nsecPrivateKeyCode.innerText = nsecPrivateKey;
