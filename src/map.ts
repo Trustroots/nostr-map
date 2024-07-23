@@ -109,10 +109,27 @@ globalThis.addEventListener("popstate", (event) => {
   globalThis.document.location.reload();
 });
 
+function generateDatetimeFromNote(note: Note): string {
+  const { createdAt } = note;
+  const date = new Date(createdAt * 1000);
+
+  const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are zero-based, so add 1
+  const day = ('0' + date.getDate()).slice(-2);
+
+  // Extract the time components
+  const hours = ('0' + date.getHours()).slice(-2);
+  const minutes = ('0' + date.getMinutes()).slice(-2);
+
+  // Format the date and time strings
+  const datetime = `${hours}:${minutes} ${day}-${month}`;
+
+  console.log("createdAt", datetime);
+  return datetime;
+}
+
 function generateLinkFromNote(note: Note): string {
   const { authorName, authorTrustrootsUsername, authorTripHoppingUserId } =
     note;
-
   if (authorTrustrootsUsername.length > 3) {
     if (authorName.length > 1) {
       return ` by <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorName}</a>`;
@@ -135,7 +152,8 @@ function generateLinkFromNote(note: Note): string {
 function generateContentFromNotes(notes: Note[]) {
   const lines = notes.reduce((existingLines, note) => {
     const link = generateLinkFromNote(note);
-    const noteContent = `${note.content}${link}`;
+    const datetime = generateDatetimeFromNote(note);
+    const noteContent = `${note.content}${link} ${datetime}`;
     return existingLines.concat(noteContent);
   }, [] as string[]);
   const content = lines.join("<br />");

@@ -62,11 +62,13 @@ const eventToNote = ({
   const authorName = profile?.name || "";
   const authorTrustrootsUsername = profile?.trustrootsUsername || "";
   const authorTripHoppingUserId = profile?.tripHoppingUserId || "";
+  const createdAt = event.created_at;
   return {
     ...baseNote,
     authorName,
     authorTrustrootsUsername,
     authorTripHoppingUserId,
+    createdAt,
   };
 };
 
