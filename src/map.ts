@@ -1,5 +1,6 @@
 import L from "leaflet";
 import "leaflet.sidepanel";
+
 import { decode, encode } from "pluscodes";
 import { BADGE_CONTAINER_ID, PANEL_CONTAINER_ID } from "./constants";
 import { hasPrivateKey } from "./nostr/keys";
@@ -75,6 +76,7 @@ map.on("contextmenu", async (event) => {
 
   // Create a marker instead of a polygon
   const marker = L.circleMarker(event.latlng, circleMarker);
+
   marker.addTo(map);
 
   const createNoteCallback = async (content) => {
@@ -112,12 +114,12 @@ function generateDatetimeFromNote(note: Note): string {
   const { createdAt } = note;
   const date = new Date(createdAt * 1000);
 
-  const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are zero-based, so add 1
-  const day = ('0' + date.getDate()).slice(-2);
+  const month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero-based, so add 1
+  const day = ("0" + date.getDate()).slice(-2);
 
   // Extract the time components
-  const hours = ('0' + date.getHours()).slice(-2);
-  const minutes = ('0' + date.getMinutes()).slice(-2);
+  const hours = ("0" + date.getHours()).slice(-2);
+  const minutes = ("0" + date.getMinutes()).slice(-2);
 
   // Format the date and time strings
   const datetime = `${hours}:${minutes} ${day}-${month}`;
@@ -170,7 +172,6 @@ function generateChatContentFromNotes(notes: Note[]) {
   return content;
 }
 
-
 function addNoteToMap(note: Note) {
   let existing = plusCodesWithPopupsAndNotes[note.plusCode];
 
@@ -193,13 +194,33 @@ function addNoteToMap(note: Note) {
       longitude: cLong,
       latitude: cLat,
     } = decodedCoords!;
-    const marker = L.circleMarker([cLat, cLong], circleMarker); // Create marker with decoded coordinates
+
+    let color;
+    let fillColor;
+    const hitchWikiYello = "#F3DA71";
+    const hitchWikiYelloLight = "#FFFBEE";
+    const hitchWikiPK =
+      "53055ee011e96a00a705b38253b9cbc6614ccbd37df4dad42ec69bbe608c4209";
+    const trGreen = "#12B591";
+
+    if (note.authorPublicKey === hitchWikiPK) {
+      color = hitchWikiYello;
+      fillColor = hitchWikiYelloLight;
+    } else {
+      color = trGreen;
+    }
+
+    const marker = L.circleMarker([cLat, cLong], {
+      ...circleMarker,
+      color: color,
+      fillColor: fillColor,
+    }); // Create marker with decoded coordinates
     marker.addTo(map);
 
     const contentMap = generateMapContentFromNotes([note]);
     const contentChat = generateChatContentFromNotes([note]);
-    
-    //todo: rename addNoteToMap and other map 
+
+    //todo: rename addNoteToMap and other map
     console.log(note);
     const geochatNotes = document.getElementById("geochat-notes");
     const li = document.createElement("li");
