@@ -3,7 +3,7 @@ import {
   CONTENT_MAXIMUM_LENGTH,
   CONTENT_MINIMUM_LENGTH,
   LABEL_NAMESPACE_TAG,
-  MAP_NOTE_REPOST_KIND,
+  MAP_NOTE_KIND,
   OPEN_LOCATION_CODE_NAMESPACE_TAG,
   PLUS_CODE_TAG_KEY,
 } from "../constants";
@@ -35,7 +35,7 @@ export const createNote = async ({
   }
 
   const unsignedEvent: UnsignedEvent = {
-    kind: MAP_NOTE_REPOST_KIND,
+    kind: MAP_NOTE_KIND,
     content,
     tags: [
       [LABEL_NAMESPACE_TAG, OPEN_LOCATION_CODE_NAMESPACE_TAG],
