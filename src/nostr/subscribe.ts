@@ -2,8 +2,9 @@ import { Kind, Filter, nip19 } from "nostr-tools";
 import {
   CONTENT_MAXIMUM_LENGTH,
   EARLIEST_FILTER_SINCE,
-  MAP_NOTE_KIND,
+  MAP_NOTE_REPOST_KIND,
   PLUS_CODE_TAG_KEY,
+  TRUSTED_VALIDATION_PUBKEYS,
 } from "../constants";
 import { NostrEvent, Note, Profile } from "../types";
 import { _subscribe } from "./relays";
@@ -29,7 +30,7 @@ const eventToNoteMinusProfile = ({
   const { id, kind, content } = event;
   // NOTE: We need to cast `note.kind` here because the `NostrEvent` type has a
   // enum for Kinds, which doesn't include our custom kind.
-  if ((kind as number) !== MAP_NOTE_KIND) {
+  if ((kind as number) !== MAP_NOTE_REPOST_KIND) {
     throw new Error("#w27ijD Cannot convert event of wrong kind to note");
   }
 
@@ -58,7 +59,9 @@ const eventToNote = ({
   profiles: { [publicKey: string]: Profile };
 }): Note => {
   const baseNote = eventToNoteMinusProfile({ event });
-  const profile = profiles[baseNote.authorPublicKey];
+  const originalEventAuthor =
+    getTagFirstValueFromEvent({ event, tag: "p" }) ?? "";
+  const profile = profiles[originalEventAuthor];
   const authorName = profile?.name || "";
   const authorTrustrootsUsername = profile?.trustrootsUsername || "";
   const authorTripHoppingUserId = profile?.tripHoppingUserId || "";
@@ -97,9 +100,10 @@ export const subscribe = async ({
   const oneMonthAgo = Math.round(Date.now() / 1e3) - oneMonthInSeconds;
   const since = Math.max(EARLIEST_FILTER_SINCE, oneMonthAgo);
   const eventsBaseFilter: Filter = {
-    kinds: [MAP_NOTE_KIND],
+    kinds: [MAP_NOTE_REPOST_KIND],
     "#L": ["open-location-code"],
     since,
+    authors: TRUSTED_VALIDATION_PUBKEYS,
   };
 
   const eventsFilter: Filter = getEventsForSpecificAuthor
@@ -145,9 +149,11 @@ export const subscribe = async ({
   gotNotesEose = true;
 
   const authorsWithDuplicates = noteEventsQueue.map((event) =>
-    getPublicKeyFromEvent({ event })
+    getTagFirstValueFromEvent({ event, tag: "p" })
   );
-  const authors = uniq(authorsWithDuplicates);
+  const authors = uniq(
+    authorsWithDuplicates.filter((x) => typeof x == "string")
+  );
   const profileFilter: Filter = {
     kinds: [Kind.Metadata],
     authors,
