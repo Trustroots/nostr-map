@@ -65,7 +65,13 @@ const eventToNote = ({
   const authorName = profile?.name || "";
   const authorTrustrootsUsername = profile?.trustrootsUsername || "";
   const authorTripHoppingUserId = profile?.tripHoppingUserId || "";
-  const createdAt = event.created_at;
+  const createdAt =
+    parseInt(
+      getTagFirstValueFromEvent({
+        event,
+        tag: "original_created_at",
+      }) ?? ""
+    ) || event.created_at;
   return {
     ...baseNote,
     authorName,
