@@ -18,6 +18,12 @@ jobs:
       with:
         node-version: '18'
 
+    - name: Enable Corepack
+      run: corepack enable
+
+    - name: Prepare Yarn
+      run: corepack prepare yarn@4.4.0 --activate
+
     - name: Configure git to use HTTPS instead of SSH
       run: git config --global url."https://".insteadOf ssh://
 
@@ -32,4 +38,3 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist
-
