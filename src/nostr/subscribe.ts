@@ -113,7 +113,7 @@ export const subscribe = async ({
   };
 
   const eventsFilter: Filter = getEventsForSpecificAuthor
-    ? { ...eventsBaseFilter, authors: [publicKey] }
+    ? { ...eventsBaseFilter, "#p": [publicKey] }
     : eventsBaseFilter;
   const eventsFilterWithLimit = { ...eventsFilter, limit };
 

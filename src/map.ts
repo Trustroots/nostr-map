@@ -5,6 +5,8 @@ import { decode, encode } from "pluscodes";
 import {
   BADGE_CONTAINER_ID,
   HITCHMAPS_AUTHOR_PUBLIC_KEY,
+  CONTENT_MAXIMUM_LENGTH,
+  CONTENT_MINIMUM_LENGTH,
   PANEL_CONTAINER_ID,
 } from "./constants";
 import { hasPrivateKey } from "./nostr/keys";
@@ -83,8 +85,8 @@ map.on("contextmenu", async (event) => {
 
   marker.addTo(map);
 
-  const createNoteCallback = async (content) => {
-    createNote({ content, plusCode });
+  const createNoteCallback = async (content, expirationDate) => {
+    createNote({ content, plusCode, expirationDate });
   };
 
   const popupContent = createPopupHtml(createNoteCallback);
@@ -242,19 +244,48 @@ function addNoteToMap(note: Note) {
 function createPopupHtml(createNoteCallback) {
   const popupContainer = document.createElement("div");
   popupContainer.className = "popup-container";
-  const contentInput = document.createElement("input");
-  contentInput.id = "content";
-  contentInput.type = "text";
-  contentInput.required = true;
-  contentInput.placeholder = "What do you want to say about this area?";
+  const contentTextArea = document.createElement("textarea");
+  contentTextArea.id = "content";
+  contentTextArea.required = true;
+  contentTextArea.placeholder = "What do you want to say about this area?";
+  contentTextArea.cols = 35;
+  contentTextArea.rows = 8;
+  contentTextArea.style.resize = "none";
+  contentTextArea.maxLength = CONTENT_MAXIMUM_LENGTH;
+  contentTextArea.minLength = CONTENT_MINIMUM_LENGTH;
+
+  const expirationSelect = document.createElement("select");
+
+  const expirationOptions = {
+    "5 minutes": 5 * 60,
+    "1 hour": 60 * 60,
+    "1 day": 24 * 60 * 60,
+    "1 week": 7 * 24 * 60 * 60,
+    "1 month": 30 * 24 * 60 * 60,
+    "no expiry": null,
+  };
+  Object.entries(expirationOptions).forEach(([humanReadable, value]) => {
+    const expirationOption = document.createElement("option");
+    expirationOption.value = value?.toString() ?? "";
+    expirationOption.innerText = humanReadable;
+    expirationSelect.appendChild(expirationOption);
+  });
   const submitButton = document.createElement("button");
   submitButton.innerText = "Add Note!";
+  submitButton.style.float = "right";
   submitButton.onclick = () => {
-    const content = contentInput.value;
-    createNoteCallback(content);
+    const content = contentTextArea.value;
+    const expirationTime = parseInt(expirationSelect.value) || null;
+    console.log("time", expirationTime);
+    const expirationDate = expirationTime
+      ? Math.floor(Date.now() / 1000 + expirationTime)
+      : null;
+    console.log("expiration date", expirationDate), expirationTime;
+    createNoteCallback(content, expirationDate);
     map.closePopup();
   };
-  popupContainer.appendChild(contentInput);
+  popupContainer.appendChild(contentTextArea);
+  popupContainer.appendChild(expirationSelect);
   popupContainer.appendChild(submitButton);
   return popupContainer;
 }
