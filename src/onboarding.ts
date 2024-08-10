@@ -1,6 +1,10 @@
 import { generatePrivateKey, getPublicKey, nip19 } from "nostr-tools";
 import { setProfile } from "./nostr";
-import { setNsecPrivateKey, setPrivateKey } from "./nostr/keys";
+import {
+  putNpubOnTrustroots,
+  setNsecPrivateKey,
+  setPrivateKey,
+} from "./nostr/keys";
 import { getTrustrootsUsernameFromLocation } from "./router";
 import { alert, confirmYesNo, prompt } from "./utils";
 
