@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import { getTrustrootsUsernameFromLocation } from "../router";
 import { NostrEvent, Profile, UnsignedEvent } from "../types";
 import { setProfile } from "./profiles";
+import * as nostrify from "@nostrify/nostrify";
 
 export const dateToUnix = (_date?: Date) => {
   const date = _date || new Date();
@@ -53,7 +54,7 @@ export const filterForTag = (key: string) => (tags: string[]) =>
 
 type GetTagFirstValueFromEventParams = {
   /** The event to extract the tag value from */
-  event: NostrEvent;
+  event: nostrify.NostrEvent;
   /** The name (key) of the tag to get the value of */
   tag: string;
 };

@@ -15,6 +15,7 @@ export type Note = {
   authorTripHoppingUserId: string;
   authorPublicKey: string;
   authorNpubPublicKey: string;
+  createdAt: number;
 };
 
 export type Profile = {

@@ -226,7 +226,9 @@ function addNoteToMap(note: Note) {
 
     //todo: rename addNoteToMap and other map
     console.log(note);
-    const geochatNotes = document.getElementById("geochat-notes");
+    const geochatNotes = document.getElementById(
+      "geochat-notes"
+    ) as HTMLElement;
     const li = document.createElement("li");
     li.innerHTML = contentChat;
     geochatNotes.appendChild(li);

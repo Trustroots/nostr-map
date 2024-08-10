@@ -1,7 +1,7 @@
 import { Kind, nip19 } from "nostr-tools";
 import { MaybeLocalStorage, Profile, UnsignedEvent } from "../types";
 import { getPrivateKey } from "./keys";
-import { _publish, _subscribe } from "./relays";
+import { _publish, _query } from "./relays";
 import {
   getProfileFromEvent,
   sanitise,
@@ -47,8 +47,7 @@ export const setProfile = async ({
     privateKey: key,
   });
   try {
-    const publishPromises = _publish(signedEvent);
-    await Promise.all(publishPromises);
+    const publishPromises = await _publish(signedEvent);
   } catch (error) {
     const message = "#mkox3R Error saving profile";
     console.error(message, error);

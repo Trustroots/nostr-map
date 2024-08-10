@@ -22,7 +22,7 @@
     "@types/leaflet": "^1.9.0",
     "gh-pages": "^5.0.0",
     "parcel": "^2.8.3",
-    "prettier": "2.8.3"
+    "prettier": "2.8.3",
   },
   "dependencies": {
     "@nostrify/nostrify": "npm:@jsr/nostrify__nostrify@^0.30.0",
@@ -33,5 +33,8 @@
     "pluscodes": "^2.6.0",
     "sweetalert2": "^11.11.0"
   },
-  "packageManager": "yarn@4.4.0"
+  "packageManager": "yarn@4.4.0",
+  "@parcel/resolver-default": {
+    "packageExports": true
+  }
 }

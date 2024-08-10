@@ -7,7 +7,7 @@ import {
   TRUSTED_VALIDATION_PUBKEYS,
 } from "../constants";
 import { NostrEvent, Note, Profile } from "../types";
-import { _subscribe } from "./relays";
+import { _query } from "./relays";
 import {
   doesStringPassSanitisation,
   getProfileFromEvent,
@@ -18,6 +18,7 @@ import {
   uniq,
 } from "./utils";
 import { isValidAttribute } from "dompurify";
+import * as nostrify from "@nostrify/nostrify";
 
 const eventToNoteMinusProfile = ({
   event,
@@ -42,12 +43,15 @@ const eventToNoteMinusProfile = ({
   const publicKey = getPublicKeyFromEvent({ event });
   const authorNpubPublicKey = nip19.npubEncode(publicKey);
 
+  const createdAt = event.created_at;
+
   return {
     id,
     authorPublicKey: publicKey,
     authorNpubPublicKey,
     content,
     plusCode,
+    createdAt,
   };
 };
 
@@ -95,9 +99,7 @@ export const subscribe = async ({
   onNoteReceived,
   limit = 200,
 }: SubscribeParams) => {
-  // console.log("#qnvvsm nostr/subscribe", publicKey);
-  let gotNotesEose = false;
-  let gotPromiseEose = false;
+  console.log("#qnvvsm nostr/subscribe", publicKey);
   const profiles: { [publicKey: string]: Profile } = {};
 
   const getEventsForSpecificAuthor = typeof publicKey !== "undefined";
@@ -117,9 +119,9 @@ export const subscribe = async ({
     : eventsBaseFilter;
   const eventsFilterWithLimit = { ...eventsFilter, limit };
 
-  const noteEventsQueue: NostrEvent[] = [];
+  const noteEventsQueue: nostrify.NostrEvent[] = [];
 
-  const onNoteEvent = (event: NostrEvent) => {
+  const onNoteEvent = (event: nostrify.NostrEvent) => {
     // if (isDev()) console.log("#gITVd2 gotNoteEvent", event);
 
     if (
@@ -138,21 +140,14 @@ export const subscribe = async ({
       return;
     }
 
-    if (!gotNotesEose || !gotPromiseEose) {
-      noteEventsQueue.push(event);
-      return;
-    }
-
-    const note = eventToNote({ event, profiles });
-    onNoteReceived(note);
+    noteEventsQueue.push(event);
+    return;
   };
 
-  const noteSubscriptions = _subscribe({
+  await _query({
     filters: [eventsFilterWithLimit],
     onEvent: onNoteEvent,
   });
-  await Promise.race(await noteSubscriptions);
-  gotNotesEose = true;
 
   const authorsWithDuplicates = noteEventsQueue.map((event) =>
     getTagFirstValueFromEvent({ event, tag: "p" })
@@ -185,12 +180,10 @@ export const subscribe = async ({
     profiles[publicKey] = profile;
   };
 
-  const profileSubscriptions = _subscribe({
+  await _query({
     filters: [profileFilter],
     onEvent: onProfileEvent,
   });
-  await Promise.race(await profileSubscriptions);
-  gotPromiseEose = true;
 
   // NOTE: At this point we should have fetched all the stored events, and all
   // the profiles of the authors of all of those events
