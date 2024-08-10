@@ -1,7 +1,12 @@
 import L from "leaflet";
 import "leaflet.sidepanel";
 import { decode, encode } from "pluscodes";
-import { BADGE_CONTAINER_ID, PANEL_CONTAINER_ID } from "./constants";
+import {
+  BADGE_CONTAINER_ID,
+  CONTENT_MAXIMUM_LENGTH,
+  CONTENT_MINIMUM_LENGTH,
+  PANEL_CONTAINER_ID,
+} from "./constants";
 import { hasPrivateKey } from "./nostr/keys";
 import { createNote } from "./nostr/notes";
 import { _initRelays } from "./nostr/relays";
@@ -77,8 +82,8 @@ map.on("contextmenu", async (event) => {
   const marker = L.circleMarker(event.latlng, circleMarker);
   marker.addTo(map);
 
-  const createNoteCallback = async (content) => {
-    createNote({ content, plusCode });
+  const createNoteCallback = async (content, expirationDate) => {
+    createNote({ content, plusCode, expirationDate });
   };
 
   const popupContent = createPopupHtml(createNoteCallback);
@@ -112,12 +117,12 @@ function generateDatetimeFromNote(note: Note): string {
   const { createdAt } = note;
   const date = new Date(createdAt * 1000);
 
-  const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are zero-based, so add 1
-  const day = ('0' + date.getDate()).slice(-2);
+  const month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero-based, so add 1
+  const day = ("0" + date.getDate()).slice(-2);
 
   // Extract the time components
-  const hours = ('0' + date.getHours()).slice(-2);
-  const minutes = ('0' + date.getMinutes()).slice(-2);
+  const hours = ("0" + date.getHours()).slice(-2);
+  const minutes = ("0" + date.getMinutes()).slice(-2);
 
   // Format the date and time strings
   const datetime = `${hours}:${minutes} ${day}-${month}`;
@@ -170,7 +175,6 @@ function generateChatContentFromNotes(notes: Note[]) {
   return content;
 }
 
-
 function addNoteToMap(note: Note) {
   let existing = plusCodesWithPopupsAndNotes[note.plusCode];
 
@@ -198,8 +202,8 @@ function addNoteToMap(note: Note) {
 
     const contentMap = generateMapContentFromNotes([note]);
     const contentChat = generateChatContentFromNotes([note]);
-    
-    //todo: rename addNoteToMap and other map 
+
+    //todo: rename addNoteToMap and other map
     console.log(note);
     const geochatNotes = document.getElementById("geochat-notes");
     const li = document.createElement("li");
@@ -219,19 +223,48 @@ function addNoteToMap(note: Note) {
 function createPopupHtml(createNoteCallback) {
   const popupContainer = document.createElement("div");
   popupContainer.className = "popup-container";
-  const contentInput = document.createElement("input");
-  contentInput.id = "content";
-  contentInput.type = "text";
-  contentInput.required = true;
-  contentInput.placeholder = "What do you want to say about this area?";
+  const contentTextArea = document.createElement("textarea");
+  contentTextArea.id = "content";
+  contentTextArea.required = true;
+  contentTextArea.placeholder = "What do you want to say about this area?";
+  contentTextArea.cols = 35;
+  contentTextArea.rows = 8;
+  contentTextArea.style.resize = "none";
+  contentTextArea.maxLength = CONTENT_MAXIMUM_LENGTH;
+  contentTextArea.minLength = CONTENT_MINIMUM_LENGTH;
+
+  const expirationSelect = document.createElement("select");
+
+  const expirationOptions = {
+    "5 minutes": 5 * 60,
+    "1 hour": 60 * 60,
+    "1 day": 24 * 60 * 60,
+    "1 week": 7 * 24 * 60 * 60,
+    "1 month": 30 * 24 * 60 * 60,
+    "no expiry": null,
+  };
+  Object.entries(expirationOptions).forEach(([humanReadable, value]) => {
+    const expirationOption = document.createElement("option");
+    expirationOption.value = value?.toString() ?? "";
+    expirationOption.innerText = humanReadable;
+    expirationSelect.appendChild(expirationOption);
+  });
   const submitButton = document.createElement("button");
   submitButton.innerText = "Add Note!";
+  submitButton.style.float = "right";
   submitButton.onclick = () => {
-    const content = contentInput.value;
-    createNoteCallback(content);
+    const content = contentTextArea.value;
+    const expirationTime = parseInt(expirationSelect.value) || null;
+    console.log("time", expirationTime);
+    const expirationDate = expirationTime
+      ? Math.floor(Date.now() / 1000 + expirationTime)
+      : null;
+    console.log("expiration date", expirationDate), expirationTime;
+    createNoteCallback(content, expirationDate);
     map.closePopup();
   };
-  popupContainer.appendChild(contentInput);
+  popupContainer.appendChild(contentTextArea);
+  popupContainer.appendChild(expirationSelect);
   popupContainer.appendChild(submitButton);
   return popupContainer;
 }
