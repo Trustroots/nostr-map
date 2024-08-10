@@ -98,6 +98,56 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jsr/nostrify__types@npm:^0.30.0":
+  version: 0.30.0
+  resolution: "@jsr/nostrify__types@npm:0.30.0::__archiveUrl=https%3A%2F%2Fnpm.jsr.io%2F~%2F11%2F%40jsr%2Fnostrify__types%2F0.30.0.tgz"
+  checksum: 10c0/24210b72aebc832379ceafa348976bd23d134d9576827cc98a6ede0f73821206d9e1d8ef90c500a266dc33bf31a9d47b779a291657834257b9d65fb131d8365f
+  languageName: node
+  linkType: hard
+
+"@jsr/std__assert@npm:^0.224.0":
+  version: 0.224.0
+  resolution: "@jsr/std__assert@npm:0.224.0::__archiveUrl=https%3A%2F%2Fnpm.jsr.io%2F~%2F11%2F%40jsr%2Fstd__assert%2F0.224.0.tgz"
+  dependencies:
+    "@jsr/std__fmt": "npm:^0.224.0"
+    "@jsr/std__internal": "npm:^0.224.0"
+  checksum: 10c0/ece1f337ba6946fb2f0ff36456cc2b7049b7413f747c52d85d8a1a3219894e54dda143243ecf8fe83fa2ae739b49c1c067df0c910e64623cb0f0431471f5f06c
+  languageName: node
+  linkType: hard
+
+"@jsr/std__crypto@npm:^0.224.0":
+  version: 0.224.0
+  resolution: "@jsr/std__crypto@npm:0.224.0::__archiveUrl=https%3A%2F%2Fnpm.jsr.io%2F~%2F11%2F%40jsr%2Fstd__crypto%2F0.224.0.tgz"
+  dependencies:
+    "@jsr/std__assert": "npm:^0.224.0"
+    "@jsr/std__encoding": "npm:^0.224.0"
+  checksum: 10c0/97741158272c66e1f66e0fc8ad116aac9084e7dcbcc599281fa8c4dc99c1199569c9a66ae8f781458d3bc1d4d6516760bffeebb8320dd067e5b5febeb50918a7
+  languageName: node
+  linkType: hard
+
+"@jsr/std__encoding@npm:^0.224.0, @jsr/std__encoding@npm:^0.224.1":
+  version: 0.224.3
+  resolution: "@jsr/std__encoding@npm:0.224.3::__archiveUrl=https%3A%2F%2Fnpm.jsr.io%2F~%2F11%2F%40jsr%2Fstd__encoding%2F0.224.3.tgz"
+  checksum: 10c0/3a918e029614d3178d7039c1d27e28aedfdd3e1bb3358391836cc49ec0173cd2255a072d5fda4c067364d090b17a7167f7285a75ef675b1c45fc70cbb46e4487
+  languageName: node
+  linkType: hard
+
+"@jsr/std__fmt@npm:^0.224.0":
+  version: 0.224.0
+  resolution: "@jsr/std__fmt@npm:0.224.0::__archiveUrl=https%3A%2F%2Fnpm.jsr.io%2F~%2F11%2F%40jsr%2Fstd__fmt%2F0.224.0.tgz"
+  checksum: 10c0/06abd6863347f9f3ce15cccca0ae6efb90e987bc769b354764da5b502471a4fe4be84514b5a12de014e663e73cf664b1c92c99d923670f66c4d260a5d406a72f
+  languageName: node
+  linkType: hard
+
+"@jsr/std__internal@npm:^0.224.0":
+  version: 0.224.0
+  resolution: "@jsr/std__internal@npm:0.224.0::__archiveUrl=https%3A%2F%2Fnpm.jsr.io%2F~%2F11%2F%40jsr%2Fstd__internal%2F0.224.0.tgz"
+  dependencies:
+    "@jsr/std__fmt": "npm:^0.224.0"
+  checksum: 10c0/226fb04e745d3d81d6ee29565e5384983bc3ec69a0a25546b10c013fc4f1c167678752b51411aa5706bb61fe3622ecfa1fb37991d00978512c4b5454c40473a4
+  languageName: node
+  linkType: hard
+
 "@lezer/common@npm:^0.15.0, @lezer/common@npm:^0.15.7":
   version: 0.15.12
   resolution: "@lezer/common@npm:0.15.12"
@@ -209,6 +259,61 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/ciphers@npm:^0.5.1":
+  version: 0.5.3
+  resolution: "@noble/ciphers@npm:0.5.3"
+  checksum: 10c0/2303217304baf51ec6caa2d984f4e640a66d3d586162ed8fecf37a00268fbf362e22cd5bceae4b0ccda4fa06ad0cb294d6a6b158260bbd2eac6a3dc0448f5254
+  languageName: node
+  linkType: hard
+
+"@noble/curves@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@noble/curves@npm:1.2.0"
+  dependencies:
+    "@noble/hashes": "npm:1.3.2"
+  checksum: 10c0/0bac7d1bbfb3c2286910b02598addd33243cb97c3f36f987ecc927a4be8d7d88e0fcb12b0f0ef8a044e7307d1844dd5c49bb724bfa0a79c8ec50ba60768c97f6
+  languageName: node
+  linkType: hard
+
+"@noble/curves@npm:~1.1.0":
+  version: 1.1.0
+  resolution: "@noble/curves@npm:1.1.0"
+  dependencies:
+    "@noble/hashes": "npm:1.3.1"
+  checksum: 10c0/81115c3ebfa7e7da2d7e18d44d686f98dc6d35dbde3964412c05707c92d0994a01545bc265d5c0bc05c8c49333f75b99c9acef6750f5a79b3abcc8e0546acf88
+  languageName: node
+  linkType: hard
+
+"@noble/curves@npm:~1.4.0":
+  version: 1.4.2
+  resolution: "@noble/curves@npm:1.4.2"
+  dependencies:
+    "@noble/hashes": "npm:1.4.0"
+  checksum: 10c0/65620c895b15d46e8087939db6657b46a1a15cd4e0e4de5cd84b97a0dfe0af85f33a431bb21ac88267e3dc508618245d4cb564213959d66a84d690fe18a63419
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:1.3.1":
+  version: 1.3.1
+  resolution: "@noble/hashes@npm:1.3.1"
+  checksum: 10c0/86512713aaf338bced594bc2046ab249fea4e1ba1e7f2ecd02151ef1b8536315e788c11608fafe1b56f04fad1aa3c602da7e5f8e5fcd5f8b0aa94435fe65278e
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:1.3.2":
+  version: 1.3.2
+  resolution: "@noble/hashes@npm:1.3.2"
+  checksum: 10c0/2482cce3bce6a596626f94ca296e21378e7a5d4c09597cbc46e65ffacc3d64c8df73111f2265444e36a3168208628258bbbaccba2ef24f65f58b2417638a20e7
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:1.4.0, @noble/hashes@npm:~1.4.0":
+  version: 1.4.0
+  resolution: "@noble/hashes@npm:1.4.0"
+  checksum: 10c0/8c3f005ee72e7b8f9cff756dfae1241485187254e3f743873e22073d63906863df5d4f13d441b7530ea614b7a093f0d889309f28b59850f33b66cb26a779a4a5
+  languageName: node
+  linkType: hard
+
 "@noble/hashes@npm:^0.5.7":
   version: 0.5.9
   resolution: "@noble/hashes@npm:0.5.9"
@@ -223,10 +328,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/hashes@npm:~1.3.0, @noble/hashes@npm:~1.3.1":
+  version: 1.3.3
+  resolution: "@noble/hashes@npm:1.3.3"
+  checksum: 10c0/23c020b33da4172c988e44100e33cd9f8f6250b68b43c467d3551f82070ebd9716e0d9d2347427aa3774c85934a35fa9ee6f026fca2117e3fa12db7bedae7668
+  languageName: node
+  linkType: hard
+
 "@noble/secp256k1@npm:^1.7.0, @noble/secp256k1@npm:~1.7.0":
   version: 1.7.1
   resolution: "@noble/secp256k1@npm:1.7.1"
   checksum: 10c0/48091801d39daba75520012027d0ff0b1719338d96033890cfe0d287ad75af00d82769c0194a06e7e4fbd816ae3f204f4a59c9e26f0ad16b429f7e9b5403ccd5
+  languageName: node
+  linkType: hard
+
+"@nostrify/nostrify@npm:@jsr/nostrify__nostrify@^0.30.0":
+  version: 0.30.0
+  resolution: "@jsr/nostrify__nostrify@npm:0.30.0::__archiveUrl=https%3A%2F%2Fnpm.jsr.io%2F~%2F11%2F%40jsr%2Fnostrify__nostrify%2F0.30.0.tgz"
+  dependencies:
+    "@jsr/nostrify__types": "npm:^0.30.0"
+    "@jsr/std__crypto": "npm:^0.224.0"
+    "@jsr/std__encoding": "npm:^0.224.1"
+    "@scure/base": "npm:^1.1.6"
+    "@scure/bip32": "npm:^1.4.0"
+    "@scure/bip39": "npm:^1.3.0"
+    lru-cache: "npm:^10.2.0"
+    nostr-tools: "npm:^2.7.0"
+    websocket-ts: "npm:^2.1.5"
+    zod: "npm:^3.23.8"
+  checksum: 10c0/3334a8985d7d7caffdbc735ed814ff655212ccc17ab9cb656d37a6929dff5040f79982a839ccb2c4abb4c3cf055b388d007b982480488d4d405cef5f7acfc56c
   languageName: node
   linkType: hard
 
@@ -949,10 +1079,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/base@npm:^1.1.1, @scure/base@npm:~1.1.0":
+"@scure/base@npm:1.1.1, @scure/base@npm:^1.1.1, @scure/base@npm:~1.1.0":
   version: 1.1.1
   resolution: "@scure/base@npm:1.1.1"
   checksum: 10c0/97d200da8915ca18a4eceb73c23dda7fc3a4b8509f620c9b7756ee451d7c9ebbc828c6662f9ffa047806fbe41f37bf236c6ef75692690688b7659196cb2dc804
+  languageName: node
+  linkType: hard
+
+"@scure/base@npm:^1.1.6, @scure/base@npm:~1.1.6":
+  version: 1.1.7
+  resolution: "@scure/base@npm:1.1.7"
+  checksum: 10c0/2d06aaf39e6de4b9640eb40d2e5419176ebfe911597856dcbf3bc6209277ddb83f4b4b02cb1fd1208f819654268ec083da68111d3530bbde07bae913e2fc2e5d
+  languageName: node
+  linkType: hard
+
+"@scure/bip32@npm:1.3.1":
+  version: 1.3.1
+  resolution: "@scure/bip32@npm:1.3.1"
+  dependencies:
+    "@noble/curves": "npm:~1.1.0"
+    "@noble/hashes": "npm:~1.3.1"
+    "@scure/base": "npm:~1.1.0"
+  checksum: 10c0/9ff0ad56f512794aed1ed62e582bf855db829e688235420a116b210169dc31e3e2a8cc4a908126aaa07b6dcbcc4cd085eb12f9d0a8b507a88946d6171a437195
   languageName: node
   linkType: hard
 
@@ -967,6 +1115,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@scure/bip32@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@scure/bip32@npm:1.4.0"
+  dependencies:
+    "@noble/curves": "npm:~1.4.0"
+    "@noble/hashes": "npm:~1.4.0"
+    "@scure/base": "npm:~1.1.6"
+  checksum: 10c0/6849690d49a3bf1d0ffde9452eb16ab83478c1bc0da7b914f873e2930cd5acf972ee81320e3df1963eb247cf57e76d2d975b5f97093d37c0e3f7326581bf41bd
+  languageName: node
+  linkType: hard
+
+"@scure/bip39@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@scure/bip39@npm:1.2.1"
+  dependencies:
+    "@noble/hashes": "npm:~1.3.0"
+    "@scure/base": "npm:~1.1.0"
+  checksum: 10c0/fe951f69dd5a7cdcefbe865bce1b160d6b59ba19bd01d09f0718e54fce37a7d8be158b32f5455f0e9c426a7fbbede3e019bf0baa99bacc88ef26a76a07e115d4
+  languageName: node
+  linkType: hard
+
 "@scure/bip39@npm:^1.1.0":
   version: 1.1.1
   resolution: "@scure/bip39@npm:1.1.1"
@@ -974,6 +1143,16 @@ __metadata:
     "@noble/hashes": "npm:~1.2.0"
     "@scure/base": "npm:~1.1.0"
   checksum: 10c0/821dc9d5be8362a32277390526db064860c2216a079ba51d63def9289c2b290599e93681ebbeebf0e93540799eec35784c1dfcf5167d0b280ef148e5023ce01b
+  languageName: node
+  linkType: hard
+
+"@scure/bip39@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@scure/bip39@npm:1.3.0"
+  dependencies:
+    "@noble/hashes": "npm:~1.4.0"
+    "@scure/base": "npm:~1.1.6"
+  checksum: 10c0/1ae1545a7384a4d9e33e12d9e9f8824f29b0279eb175b0f0657c0a782c217920054f9a1d28eb316a417dfc6c4e0b700d6fbdc6da160670107426d52fcbe017a8
   languageName: node
   linkType: hard
 
@@ -2607,6 +2786,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nostr-map@workspace:."
   dependencies:
+    "@nostrify/nostrify": "npm:@jsr/nostrify__nostrify@^0.30.0"
     "@parcel/transformer-sass": "npm:2.8.3"
     "@types/dompurify": "npm:^3.0.5"
     "@types/leaflet": "npm:^1.9.0"
@@ -2632,6 +2812,36 @@ __metadata:
     "@scure/bip32": "npm:^1.1.1"
     "@scure/bip39": "npm:^1.1.0"
   checksum: 10c0/b53e1682738e83ce065dd5090e2f5c4b374c1e236c3e5fb188ff1717ef5491bf0f4c49cdc0697b626fc97270959e98b7f708ed5273b044c7f994bbc43920cd6b
+  languageName: node
+  linkType: hard
+
+"nostr-tools@npm:^2.7.0":
+  version: 2.7.2
+  resolution: "nostr-tools@npm:2.7.2"
+  dependencies:
+    "@noble/ciphers": "npm:^0.5.1"
+    "@noble/curves": "npm:1.2.0"
+    "@noble/hashes": "npm:1.3.1"
+    "@scure/base": "npm:1.1.1"
+    "@scure/bip32": "npm:1.3.1"
+    "@scure/bip39": "npm:1.2.1"
+    nostr-wasm: "npm:v0.1.0"
+  peerDependencies:
+    typescript: ">=5.0.0"
+  dependenciesMeta:
+    nostr-wasm:
+      optional: true
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/66872704b3748c85e195a7f58425b204088b4432d5ff2d6c196988332e5cea6af543dd9b4f26523c42676960c9cc227ee207d056767f8cd70a479774094778af
+  languageName: node
+  linkType: hard
+
+"nostr-wasm@npm:v0.1.0":
+  version: 0.1.0
+  resolution: "nostr-wasm@npm:0.1.0"
+  checksum: 10c0/a8a674c0e038d5f790840e442a80587f6eca0810e01f3101828c34517f5c3238f510ef49f53b3f596e8effb32eb64993c57248aa25b9ccfa9386e4421c837edb
   languageName: node
   linkType: hard
 
@@ -3349,6 +3559,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"websocket-ts@npm:^2.1.5":
+  version: 2.1.5
+  resolution: "websocket-ts@npm:2.1.5"
+  checksum: 10c0/4241efaed23dd2bfae7793c7bd397eaf88bbefc87bd431551ee9d8f9254be241e6a2027092f56edb99230741b676e0f66b8a3f5a4866c0aad8ec4993f97bdebf
+  languageName: node
+  linkType: hard
+
 "which@npm:^2.0.1":
   version: 2.0.2
   resolution: "which@npm:2.0.2"
@@ -3418,5 +3635,12 @@ __metadata:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: 10c0/5c28b9eb7adc46544f28d9a8d20c5b3cb1215a886609a2fd41f51628d8aaa5878ccd628b755dbcd29f6bb4921bd04ffbc6dcc370689bb96e594e2f9813d2605f
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.23.8":
+  version: 3.23.8
+  resolution: "zod@npm:3.23.8"
+  checksum: 10c0/8f14c87d6b1b53c944c25ce7a28616896319d95bc46a9660fe441adc0ed0a81253b02b5abdaeffedbeb23bdd25a0bf1c29d2c12dd919aef6447652dd295e3e69
   languageName: node
   linkType: hard

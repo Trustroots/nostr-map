@@ -25,6 +25,7 @@
     "prettier": "2.8.3"
   },
   "dependencies": {
+    "@nostrify/nostrify": "npm:@jsr/nostrify__nostrify@^0.30.0",
     "dompurify": "^3.1.4",
     "leaflet": "^1.9.3",
     "leaflet.sidepanel": "https://github.com/maxwell-ilai/Leaflet.SidePanel",
