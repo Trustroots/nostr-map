@@ -2,7 +2,11 @@ import L from "leaflet";
 import "leaflet.sidepanel";
 
 import { decode, encode } from "pluscodes";
-import { BADGE_CONTAINER_ID, PANEL_CONTAINER_ID } from "./constants";
+import {
+  BADGE_CONTAINER_ID,
+  HITCHMAPS_AUTHOR_PUBLIC_KEY,
+  PANEL_CONTAINER_ID,
+} from "./constants";
 import { hasPrivateKey } from "./nostr/keys";
 import { createNote } from "./nostr/notes";
 import { _initRelays } from "./nostr/relays";
@@ -197,15 +201,13 @@ function addNoteToMap(note: Note) {
 
     let color;
     let fillColor;
-    const hitchWikiYello = "#F3DA71";
-    const hitchWikiYelloLight = "#FFFBEE";
-    const hitchWikiPK =
-      "53055ee011e96a00a705b38253b9cbc6614ccbd37df4dad42ec69bbe608c4209";
+    const hitchWikiYellow = "#F3DA71";
+    const hitchWikiYellowLight = "#FFFBEE";
     const trGreen = "#12B591";
 
-    if (note.authorPublicKey === hitchWikiPK) {
-      color = hitchWikiYello;
-      fillColor = hitchWikiYelloLight;
+    if (note.authorPublicKey === HITCHMAPS_AUTHOR_PUBLIC_KEY) {
+      color = hitchWikiYellow;
+      fillColor = hitchWikiYellowLight;
     } else {
       color = trGreen;
     }
