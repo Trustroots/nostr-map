@@ -1,4 +1,4 @@
-import { generatePrivateKey, nip19 } from "nostr-tools";
+import { generatePrivateKey, getPublicKey, nip19 } from "nostr-tools";
 import { setProfile } from "./nostr";
 import { setNsecPrivateKey, setPrivateKey } from "./nostr/keys";
 import { getTrustrootsUsernameFromLocation } from "./router";
@@ -68,6 +68,10 @@ export const startUserOnboarding = async () => {
   }
 
   await setPrivateKey({ privateKey: newKey });
+
+  const newPublicKey = getPublicKey(newKey);
+  const newNpub = nip19.npubEncode(newPublicKey);
+  await putNpubOnTrustroots({ npub: newNpub });
 
   await setProfile({ name: "", about: "", trustrootsUsername: username });
 

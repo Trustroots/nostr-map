@@ -3,7 +3,7 @@ import {
   getPublicKey as getPublicKeyFromPrivateKey,
   nip19,
 } from "nostr-tools";
-import { PRIVATE_KEY_STORAGE_KEY } from "../constants";
+import { PRIVATE_KEY_STORAGE_KEY, TRUSTROOTS_NPUB_PUT_URL } from "../constants";
 import { MaybeLocalStorage } from "../types";
 
 export const getPrivateKey = async ({
@@ -87,4 +87,21 @@ export const unsetPrivateKey = async ({
   localStorage = globalThis.localStorage,
 }: MaybeLocalStorage = {}) => {
   await localStorage.removeItem(PRIVATE_KEY_STORAGE_KEY);
+};
+
+export const putNpubOnTrustroots = async ({ npub }: { npub: string }) => {
+  const result = await fetch(TRUSTROOTS_NPUB_PUT_URL, {
+    body: JSON.stringify({
+      nostrNpub: npub,
+    }),
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+    },
+    credentials: "include",
+    method: "PUT",
+  });
+
+  if (result.status !== 200) {
+    throw new Error("#UU45rE Failed to put npub");
+  }
 };

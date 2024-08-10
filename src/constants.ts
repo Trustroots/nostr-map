@@ -25,3 +25,5 @@ export const TRUSTED_VALIDATION_PUBKEYS = [
 
 export const HITCHMAPS_AUTHOR_PUBLIC_KEY =
   "53055ee011e96a00a705b38253b9cbc6614ccbd37df4dad42ec69bbe608c4209" as const;
+
+export const TRUSTROOTS_NPUB_PUT_URL = "http://www.trustroots.org/api/users";
