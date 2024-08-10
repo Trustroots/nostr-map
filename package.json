@@ -1,9 +1,9 @@
 {
   "name": "nostr-map",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "NOSTR notes on maps",
   "source": "src/index.html",
-  "repository": "git@github.com:chmac/nostr-map.git",
+  "repository": "git@github.com:trustroots/nostr-map.git",
   "author": "Simon & Callum",
   "license": "AGPL-3.0-or-later",
   "scripts": {
@@ -23,6 +23,7 @@
     "gh-pages": "^5.0.0",
     "parcel": "^2.8.3",
     "prettier": "2.8.3",
+    "process": "^0.11.10"
   },
   "dependencies": {
     "@nostrify/nostrify": "npm:@jsr/nostrify__nostrify@^0.30.0",

@@ -16,6 +16,8 @@ It seems that newer node versions [don't work](https://github.com/Trustroots/nos
 - `nvm install`
 - `nvm use`
 
+You might need `corepack` to get yarn v4. [please update/clarify this]
+
 ## Ideas
 somewhat concrete:
 - [filters](https://github.com/Trustroots/nostr-map/issues/13)
