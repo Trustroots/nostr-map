@@ -120,6 +120,8 @@ function generateDatetimeFromNote(note: Note): string {
   const { createdAt } = note;
   const date = new Date(createdAt * 1000);
 
+  return date.toLocaleString();
+
   const month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero-based, so add 1
   const day = ("0" + date.getDate()).slice(-2);
 
