@@ -1,8 +1,10 @@
 import L from "leaflet";
 import "leaflet.sidepanel";
+
 import { decode, encode } from "pluscodes";
 import {
   BADGE_CONTAINER_ID,
+  HITCHMAPS_AUTHOR_PUBLIC_KEY,
   CONTENT_MAXIMUM_LENGTH,
   CONTENT_MINIMUM_LENGTH,
   PANEL_CONTAINER_ID,
@@ -80,6 +82,7 @@ map.on("contextmenu", async (event) => {
 
   // Create a marker instead of a polygon
   const marker = L.circleMarker(event.latlng, circleMarker);
+
   marker.addTo(map);
 
   const createNoteCallback = async (content, expirationDate) => {
@@ -197,7 +200,25 @@ function addNoteToMap(note: Note) {
       longitude: cLong,
       latitude: cLat,
     } = decodedCoords!;
-    const marker = L.circleMarker([cLat, cLong], circleMarker); // Create marker with decoded coordinates
+
+    let color;
+    let fillColor;
+    const hitchWikiYellow = "#F3DA71";
+    const hitchWikiYellowLight = "#FFFBEE";
+    const trGreen = "#12B591";
+
+    if (note.authorPublicKey === HITCHMAPS_AUTHOR_PUBLIC_KEY) {
+      color = hitchWikiYellow;
+      fillColor = hitchWikiYellowLight;
+    } else {
+      color = trGreen;
+    }
+
+    const marker = L.circleMarker([cLat, cLong], {
+      ...circleMarker,
+      color: color,
+      fillColor: fillColor,
+    }); // Create marker with decoded coordinates
     marker.addTo(map);
 
     const contentMap = generateMapContentFromNotes([note]);
