@@ -12,6 +12,9 @@ This is running at [notes.trustroots.org](https://notes.trustroots.org/). And it
 - `yarn start`
 - Open http://localhost:1234
 
+It seems that newer node versions [don't work](https://github.com/Trustroots/nostr-map/issues/21) don't work. You may have to run this to use node v18:
+- `nvm install`
+- `nvm use`
 
 ## Ideas
 somewhat concrete:
