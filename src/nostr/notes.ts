@@ -18,11 +18,13 @@ type CreateNoteParams = {
   /** The plus code (location) of the note */
   plusCode: string;
   privateKey?: string;
+  expirationDate?: number;
 };
 export const createNote = async ({
   content,
   plusCode,
   privateKey,
+  expirationDate,
 }: CreateNoteParams) => {
   const key =
     typeof privateKey === "undefined" ? await getPrivateKey() : privateKey;
@@ -42,6 +44,10 @@ export const createNote = async ({
       [PLUS_CODE_TAG_KEY, plusCode, OPEN_LOCATION_CODE_NAMESPACE_TAG],
     ],
   };
+
+  if (expirationDate) {
+    unsignedEvent.tags.push(["expiration", `${expirationDate}`]);
+  }
   const signedEvent = signEventWithPrivateKey({
     unsignedEvent,
     privateKey: key,
