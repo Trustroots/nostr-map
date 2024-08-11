@@ -54,7 +54,7 @@ export const filterForTag = (key: string) => (tags: string[]) =>
 
 type GetTagFirstValueFromEventParams = {
   /** The event to extract the tag value from */
-  event: nostrify.NostrEvent;
+  event: NostrEvent;
   /** The name (key) of the tag to get the value of */
   tag: string;
 };
