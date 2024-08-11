@@ -28,7 +28,7 @@ export const startup = async () => {
 
   const buildIdSpan = document.getElementById("build-id");
   if (buildIdSpan !== null) {
-    buildIdSpan.textContent = process?.env?.GITHUB_SHA || "dev";
+    buildIdSpan.textContent = process.env.GITHUB_SHA || "dev";
   }
 
   const loggedIn = L.DomUtil.get("loggedIn")!;
