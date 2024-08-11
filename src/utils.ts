@@ -1,10 +1,10 @@
+import { getPublicKey } from "nostr-tools";
 import Swal from "sweetalert2";
 import { TRUSTED_VALIDATION_PUBKEYS } from "./constants";
-import { getProfileFromEvent } from "./nostr/utils";
 import { getPrivateKey, getRelays } from "./nostr";
-import { _initRelays } from "./nostr/relays";
-import { getPublicKey } from "nostr-tools";
+import { hasPrivateKey } from "./nostr/keys";
 import { getMetadataEvent } from "./nostr/subscribe";
+import { getProfileFromEvent } from "./nostr/utils";
 
 export const confirmYesNo = async (text: string) => {
   const result = await Swal.fire({
@@ -77,17 +77,21 @@ export async function logStateToConsole() {
   const relays = await getRelays();
   const relayLine = relays.join(", ");
 
-  const privateKey = await getPrivateKey();
-  const publicKey = getPublicKey(privateKey);
-  const metadataEvent = await getMetadataEvent(publicKey);
+  const hasPrivateKeyResult = await hasPrivateKey();
   let myProfileLine = "";
-  if (!metadataEvent) myProfileLine = `No profile: ${publicKey}`;
-  else {
-    const profile = getProfileFromEvent({ event: metadataEvent });
-    const line = `${profile.name} ${
-      profile.trustrootsUsername
-    } ${publicKey.substring(0, 10)}…`;
-    myProfileLine = line;
+  if (hasPrivateKeyResult) {
+    const privateKey = await getPrivateKey();
+    const publicKey = getPublicKey(privateKey);
+    const metadataEvent = await getMetadataEvent(publicKey);
+    if (!metadataEvent) {
+      myProfileLine = `No profile: ${publicKey}`;
+    } else {
+      const profile = getProfileFromEvent({ event: metadataEvent });
+      const line = `${profile.name} ${
+        profile.trustrootsUsername
+      } ${publicKey.substring(0, 10)}…`;
+      myProfileLine = line;
+    }
   }
   console.debug(`
 # TRUSTED VALIDATION PUBKEYS
