@@ -1,10 +1,13 @@
-import { Event } from "nostr-tools";
+import * as nostrify from "@nostrify/nostrify";
 
 export type MaybeLocalStorage = Partial<WindowLocalStorage>;
 
-export type NostrEvent = Required<Event>;
+export type NostrEvent = nostrify.NostrEvent;
 
-export type UnsignedEvent = Omit<Event, "created_at" | "pubkey">;
+export type UnsignedEvent = Omit<
+  NostrEvent,
+  "created_at" | "pubkey" | "id" | "sig"
+>;
 
 export type Note = {
   id: string;

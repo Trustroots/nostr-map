@@ -161,18 +161,6 @@ function generateDatetimeFromNote(note: Note): string {
   const date = new Date(createdAt * 1000);
 
   return date.toLocaleString();
-
-  const month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero-based, so add 1
-  const day = ("0" + date.getDate()).slice(-2);
-
-  // Extract the time components
-  const hours = ("0" + date.getHours()).slice(-2);
-  const minutes = ("0" + date.getMinutes()).slice(-2);
-
-  // Format the date and time strings
-  const datetime = `${hours}:${minutes} ${day}-${month}`;
-
-  return datetime;
 }
 
 function generateLinkFromNote(note: Note): string {
@@ -320,11 +308,9 @@ function createPopupHtml(createNoteCallback) {
   submitButton.onclick = () => {
     const content = contentTextArea.value;
     const expirationTime = parseInt(expirationSelect.value) || null;
-    console.log("time", expirationTime);
     const expirationDate = expirationTime
       ? Math.floor(Date.now() / 1000 + expirationTime)
       : null;
-    console.log("expiration date", expirationDate), expirationTime;
     createNoteCallback(content, expirationDate);
     map.closePopup();
   };

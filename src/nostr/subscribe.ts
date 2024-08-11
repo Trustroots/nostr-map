@@ -119,9 +119,9 @@ export const subscribe = async ({
     : eventsBaseFilter;
   const eventsFilterWithLimit = { ...eventsFilter, limit };
 
-  const noteEventsQueue: nostrify.NostrEvent[] = [];
+  const noteEventsQueue: NostrEvent[] = [];
 
-  const onNoteEvent = (event: nostrify.NostrEvent) => {
+  const onNoteEvent = (event: NostrEvent) => {
     // if (isDev()) console.log("#gITVd2 gotNoteEvent", event);
 
     if (

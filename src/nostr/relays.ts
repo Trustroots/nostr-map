@@ -102,7 +102,7 @@ export const _publish = async (event: NostrEvent): Promise<void> => {
 
 type SubscribeParams = {
   filters: Filter[];
-  onEvent: (event: nostrify.NostrEvent) => void;
+  onEvent: (event: NostrEvent) => void;
 };
 export const _query = async ({
   filters,
