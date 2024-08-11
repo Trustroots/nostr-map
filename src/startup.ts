@@ -1,4 +1,5 @@
 import * as L from "leaflet";
+import { BUILD_SHA } from "../build";
 import { hackSidePanelClosed, hackSidePanelOpen } from "./map";
 import { getRelays, setRelays } from "./nostr";
 import {
@@ -28,7 +29,7 @@ export const startup = async () => {
 
   const buildIdSpan = document.getElementById("build-id");
   if (buildIdSpan !== null) {
-    buildIdSpan.textContent = process.env.GITHUB_SHA || "dev";
+    buildIdSpan.textContent = BUILD_SHA || "local";
   }
 
   const loggedIn = L.DomUtil.get("loggedIn")!;

@@ -17,6 +17,9 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '20'
+    
+    - name: Write SHA into file
+      run: echo "export const BUILD_SHA = \"${GITHUB_SHA}\";" > build.ts
 
     - name: Enable Corepack
       run: corepack enable
