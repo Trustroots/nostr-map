@@ -1,12 +1,8 @@
-import { Kind, nip19 } from "nostr-tools";
-import { MaybeLocalStorage, Profile, UnsignedEvent } from "../types";
+import { Kind } from "nostr-tools";
+import { MaybeLocalStorage, UnsignedEvent } from "../types";
 import { getPrivateKey } from "./keys";
-import { _publish, _query } from "./relays";
-import {
-  getProfileFromEvent,
-  sanitise,
-  signEventWithPrivateKey,
-} from "./utils";
+import { _publish } from "./relays";
+import { sanitise, signEventWithPrivateKey } from "./utils";
 
 type SetProfileParams = {
   /** The user's name to be sent to all relays */

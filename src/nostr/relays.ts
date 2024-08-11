@@ -100,23 +100,6 @@ export const _publish = async (event: NostrEvent): Promise<void> => {
   return relayPool.event(event);
 };
 
-type SubscribeParams = {
-  filters: Filter[];
-  onEvent: (event: NostrEvent) => void;
-};
-export const _query = async ({
-  filters,
-  onEvent,
-}: SubscribeParams): Promise<void> => {
-  const relayPool = await _initRelays();
-
-  const events = await relayPool.query(filters);
-
-  for (const event of events) {
-    onEvent(event);
-  }
-};
-
 export const getDefaultRelays = () => {
   const relays = isDev() ? DEV_RELAYS : DEFAULT_RELAYS;
   return relays;

@@ -1,4 +1,4 @@
-import L from "leaflet";
+import L, { CircleMarkerOptions } from "leaflet";
 import "leaflet.sidepanel";
 
 import { decode, encode } from "pluscodes";
@@ -16,7 +16,11 @@ import { _initRelays } from "./nostr/relays";
 import { getMetadataEvent, subscribe } from "./nostr/subscribe";
 import { startUserOnboarding } from "./onboarding";
 import { Note, NostrEvent, Kind30398Event, MetadataEvent } from "./types";
-import { getProfileFromEvent, getTagFirstValueFromEvent } from "./nostr/utils";
+import {
+  getProfileFromEvent,
+  getPublicKeyFromEvent,
+  getTagFirstValueFromEvent,
+} from "./nostr/utils";
 
 const map = L.map("map", {
   zoomControl: false,
@@ -31,39 +35,48 @@ L.control
 // Add a custom button to zoom to user's location
 const LocationButton = L.Control.extend({
   options: {
-    position: 'bottomright'
+    position: "bottomright",
   },
 
   onAdd: function (map) {
-    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-    const button = L.DomUtil.create('button', 'leaflet-control-custom', container);
-    button.innerHTML = '📍'; // Location pin emoji
-    button.style.backgroundColor = 'white';
-    button.style.width = '30px';
-    button.style.height = '30px';
-    button.style.color = 'green'; // Make the pin green
-    button.title = 'Zoom to your location';
-    
+    const container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+    const button = L.DomUtil.create(
+      "button",
+      "leaflet-control-custom",
+      container
+    );
+    button.innerHTML = "📍"; // Location pin emoji
+    button.style.backgroundColor = "white";
+    button.style.width = "30px";
+    button.style.height = "30px";
+    button.style.color = "green"; // Make the pin green
+    button.title = "Zoom to your location";
+
     // Move the button slightly to the left
-    container.style.marginRight = '10px';
-    
-    button.onclick = function() {
+    container.style.marginRight = "10px";
+
+    button.onclick = function () {
       if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          map.setView([lat, lon], 15); // Zoom in more than city level
-        }, function(error) {
-          console.error("Error getting location:", error);
-          alert("Unable to retrieve your location. Please check your browser settings.");
-        });
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            map.setView([lat, lon], 15); // Zoom in more than city level
+          },
+          function (error) {
+            console.error("Error getting location:", error);
+            alert(
+              "Unable to retrieve your location. Please check your browser settings."
+            );
+          }
+        );
       } else {
         alert("Geolocation is not supported by your browser.");
       }
     };
 
     return container;
-  }
+  },
 });
 
 new LocationButton().addTo(map);
@@ -78,14 +91,12 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
-// NOTE: None of these properties are recognised by the `@types/leaflet` types,
-// so we cast to `L.MarkerOptions` here.
-const circleMarker = {
+const circleMarker: CircleMarkerOptions = {
   color: "purple",
   fillColor: "#A020F0",
   fillOpacity: 0.5,
   radius: 8,
-} as L.MarkerOptions;
+};
 
 // NOTE: The leaflet sidepanel plugin doesn't have types in `@types/leaflet` and
 // so we need to cast to any here.
@@ -175,7 +186,7 @@ function generateLinkFromMetadataEvent(event: MetadataEvent): string {
   const profile = getProfileFromEvent({ event });
 
   const { name, trustrootsUsername, tripHoppingUserId } = profile;
-  if (trustrootsUsername.length > 3) {
+  if (trustrootsUsername.length > 2) {
     if (name.length > 1) {
       return ` <a href="https://www.trustroots.org/profile/${trustrootsUsername}" target="_blank">${name}</a>`;
     }
@@ -240,11 +251,12 @@ function addNoteToMap(event: Kind30398Event) {
     color = trGreen;
   }
 
+  // Create marker with decoded coordinates
   const marker = L.circleMarker([cLat, cLong], {
     ...circleMarker,
-    color: color,
-    fillColor: fillColor,
-  }); // Create marker with decoded coordinates
+    color,
+    fillColor,
+  });
   marker.addTo(map);
 
   marker.on(
@@ -260,14 +272,12 @@ async function populateAndOpenPopup(
 ) {
   const marker = markerClickEvent.target as L.Marker;
 
-  const authorPubkey = getTagFirstValueFromEvent({
-    event: kind30398Event,
-    tag: "p",
-  });
+  const authorPubkey = getPublicKeyFromEvent({ event: kind30398Event });
   const metadataEvent = await getMetadataEvent(authorPubkey);
   if (!metadataEvent)
     console.warn(
-      `Could not get metadata event for "${kind30398Event.content}"`
+      `#rtsNdn Could not get metadata event for event`,
+      kind30398Event
     );
   const contentMap = generateMapContentFromEvent(kind30398Event, metadataEvent);
   const popup = L.popup().setContent(contentMap);

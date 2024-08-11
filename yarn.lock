@@ -34,6 +34,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@henrygd/queue@npm:@jsr/henrygd__queue@^1.0.6":
+  version: 1.0.6
+  resolution: "@jsr/henrygd__queue@npm:1.0.6::__archiveUrl=https%3A%2F%2Fnpm.jsr.io%2F~%2F11%2F%40jsr%2Fhenrygd__queue%2F1.0.6.tgz"
+  checksum: 10c0/dc26a597e813b294c34427d21c00d90752e168f0a971c58c7e05dcdfd233aa55535fdcd852234748f160f3690f5b549b1b6109ad3097ccbb65e4c5d5a9a0fa77
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -3262,6 +3269,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nostr-map@workspace:."
   dependencies:
+    "@henrygd/queue": "npm:@jsr/henrygd__queue@^1.0.6"
     "@nostrify/nostrify": "npm:@jsr/nostrify__nostrify@^0.30.0"
     "@parcel/transformer-sass": "npm:2.8.3"
     "@types/dompurify": "npm:^3.0.5"
