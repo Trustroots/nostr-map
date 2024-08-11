@@ -157,6 +157,7 @@ export const subscribe = async ({
     return;
   };
 
+  console.log("#6MgNzq Starting subscription", eventsFilterWithLimit);
   await _query({
     filters: [eventsFilterWithLimit],
     onEvent: onNoteEvent as (event: NostrEvent) => void,
