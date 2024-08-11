@@ -268,11 +268,9 @@ function createPopupHtml(createNoteCallback) {
   submitButton.onclick = () => {
     const content = contentTextArea.value;
     const expirationTime = parseInt(expirationSelect.value) || null;
-    console.log("time", expirationTime);
     const expirationDate = expirationTime
       ? Math.floor(Date.now() / 1000 + expirationTime)
       : null;
-    console.log("expiration date", expirationDate), expirationTime;
     createNoteCallback(content, expirationDate);
     map.closePopup();
   };
