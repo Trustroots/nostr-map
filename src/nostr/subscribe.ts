@@ -17,6 +17,7 @@ import {
   getTagFirstValueFromEvent,
   isValidPlusCode,
 } from "./utils";
+import { logStateToConsole, promiseWithTimeout } from "../utils";
 
 const fetchProfileQueue = newQueue(2);
 
@@ -94,11 +95,17 @@ export const subscribe = async ({
 
   const relayPool = await _initRelays();
 
-  const events = (await relayPool.query([eventsFilter])) as Kind30398Event[];
+  // better handling here, this will throw an error if a relay is unresponsive
+  const events = (await promiseWithTimeout(
+    relayPool.query([eventsFilter]),
+    5000
+  )) as Kind30398Event[];
 
   console.log("#4aIfX6 Got stored events", events);
 
   events.forEach(onNoteEvent);
+
+  logStateToConsole();
 
   backgroundNoteEventsFetching(onNoteEvent);
 };

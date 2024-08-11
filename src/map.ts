@@ -26,6 +26,7 @@ import {
   getTagFirstValueFromEvent,
 } from "./nostr/utils";
 import { NSet } from "@nostrify/nostrify";
+import { logStateToConsole } from "./utils";
 
 const map = L.map("map", {
   zoomControl: false,
@@ -367,6 +368,7 @@ function createPopupHtml(createNoteCallback) {
 }
 
 const mapStartup = async () => {
+  logStateToConsole();
   const badge = L.DomUtil.get(BADGE_CONTAINER_ID) as HTMLElement;
   L.DomUtil.addClass(badge, "hide");
   L.DomUtil.removeClass(badge, "show");
@@ -374,3 +376,5 @@ const mapStartup = async () => {
   subscribe({ onEventReceived: addNoteToMap });
 };
 mapStartup();
+
+setInterval(logStateToConsole, 30 * 1000); // log state every 30 seconds
