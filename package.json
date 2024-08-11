@@ -41,5 +41,5 @@
   "alias": {
     "process": "process/browser.js",
     "buffer": "buffer"
-  },
+  }
 }
