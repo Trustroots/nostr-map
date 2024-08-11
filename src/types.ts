@@ -9,6 +9,14 @@ export type UnsignedEvent = Omit<
   "created_at" | "pubkey" | "id" | "sig"
 >;
 
+export type Kind30398Event = NostrEvent & {
+  kind: 30398;
+};
+
+export type MetadataEvent = NostrEvent & {
+  kind: 0;
+};
+
 export type Note = {
   id: string;
   plusCode: string;

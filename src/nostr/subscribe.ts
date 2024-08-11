@@ -6,8 +6,14 @@ import {
   PLUS_CODE_TAG_KEY,
   TRUSTED_VALIDATION_PUBKEYS,
 } from "../constants";
-import { NostrEvent, Note, Profile } from "../types";
-import { _query } from "./relays";
+import {
+  Kind30398Event,
+  MetadataEvent,
+  NostrEvent,
+  Note,
+  Profile,
+} from "../types";
+import { _initRelays, _query } from "./relays";
 import {
   doesStringPassSanitisation,
   getProfileFromEvent,
@@ -85,6 +91,14 @@ const eventToNote = ({
   };
 };
 
+const metadataEvents = new nostrify.NCache({ max: 1000 });
+
+export async function getMetadataEvent(pubkey) {
+  const events = await metadataEvents.query([{ authors: [pubkey] }]);
+  if (events.length === 0) return;
+  else return events[0] as MetadataEvent;
+}
+
 type SubscribeParams = {
   /** The public key of the user to fetch events for, or undefined to fetch events from all users */
   publicKey?: string;
@@ -92,11 +106,11 @@ type SubscribeParams = {
    * @default 200
    */
   limit?: number;
-  onNoteReceived: (note: Note) => void;
+  onEventReceived: (event: Kind30398Event) => void;
 };
 export const subscribe = async ({
   publicKey,
-  onNoteReceived,
+  onEventReceived: onEventReceived,
   limit = 200,
 }: SubscribeParams) => {
   console.log("#qnvvsm nostr/subscribe", publicKey);
@@ -119,9 +133,9 @@ export const subscribe = async ({
     : eventsBaseFilter;
   const eventsFilterWithLimit = { ...eventsFilter, limit };
 
-  const noteEventsQueue: NostrEvent[] = [];
+  const noteEventsQueue: Kind30398Event[] = [];
 
-  const onNoteEvent = (event: NostrEvent) => {
+  const onNoteEvent = (event: Kind30398Event) => {
     // if (isDev()) console.log("#gITVd2 gotNoteEvent", event);
 
     if (
@@ -160,7 +174,26 @@ export const subscribe = async ({
     authors,
   };
 
-  const onProfileEvent = (event: NostrEvent) => {
+  noteEventsQueue.forEach((event) => onEventReceived(event));
+  backgroundProfileFetching(profileFilter);
+  backgroundNoteEventsFetching(onEventReceived);
+};
+
+async function backgroundNoteEventsFetching(onEventReceived) {
+  const relayPool = await _initRelays();
+  const filter = {
+    kinds: [MAP_NOTE_REPOST_KIND],
+    "#L": ["open-location-code"],
+    since: Math.floor(Date.now() / 1000),
+    authors: TRUSTED_VALIDATION_PUBKEYS,
+  };
+  for await (const msg of relayPool.req([filter])) {
+    if (msg[0] === "EVENT") onEventReceived(msg[2] as Kind30398Event);
+  }
+}
+
+async function backgroundProfileFetching(profileFilter) {
+  const onProfileEvent = (event: MetadataEvent) => {
     // if (isDev()) console.log("#zD1Iau got profile event", event);
 
     const profile = getProfileFromEvent({ event });
@@ -177,19 +210,12 @@ export const subscribe = async ({
       return;
     }
 
-    profiles[publicKey] = profile;
+    metadataEvents.add(event);
+
+    // profiles[publicKey] = profile;
   };
-
-  await _query({
-    filters: [profileFilter],
-    onEvent: onProfileEvent,
-  });
-
-  // NOTE: At this point we should have fetched all the stored events, and all
-  // the profiles of the authors of all of those events
-  const notes = noteEventsQueue.map((event) =>
-    eventToNote({ event, profiles })
-  );
-
-  notes.forEach((note) => onNoteReceived(note));
-};
+  const relayPool = await _initRelays();
+  for await (const msg of relayPool.req([profileFilter])) {
+    if (msg[0] === "EVENT") onProfileEvent(msg[2] as MetadataEvent);
+  }
+}
