@@ -44,14 +44,11 @@ export const prompt = async ({
 };
 
 export function promiseWithTimeout(promise: Promise<any>, timeout: number) {
-  console.log("stargin with timeout");
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
       reject(`Timed out after ${timeout}ms.`);
     }, timeout);
-    console.log("timeout started");
     promise.then((r) => {
-      console.log("promise resolved");
       resolve(r);
     });
   });

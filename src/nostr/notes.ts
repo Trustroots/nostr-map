@@ -66,13 +66,13 @@ export const createNote = async ({
     );
   } catch (e) {
     alert(
-      `Your post was not accepted by our relay pool. Please choose different relays or try again later.`
+      `Your post was not accepted by your configured relay pool. Please choose different relays or try again later.`
     );
     console.error(e);
   }
 
   setTimeout(async () => {
-    console.log(`Verifying that event ${signedEvent.id} got validated.`);
+    console.log(`Verifying that event ${signedEvent.id} got validated…`);
     const allKind30398Events = await getKind30398Events();
     const publicKey = getPublicKey(key);
     const events = await allKind30398Events.query([
