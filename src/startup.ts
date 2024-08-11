@@ -12,6 +12,7 @@ import {
 import { getDefaultRelays } from "./nostr/relays";
 import { startUserOnboarding } from "./onboarding";
 import { startWelcomeSequence } from "./welcome";
+import { validateNip5 } from "./nostr/nip5";
 
 export const startup = async () => {
   const isLoggedIn = await hasPrivateKey();
@@ -31,6 +32,8 @@ export const startup = async () => {
   const loggedOut = L.DomUtil.get("loggedOut")!;
 
   if (isLoggedIn) {
+    validateNip5();
+
     L.DomUtil.addClass(loggedIn, "show");
     L.DomUtil.addClass(loggedOut, "hide");
 

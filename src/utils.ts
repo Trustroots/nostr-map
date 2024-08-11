@@ -16,8 +16,9 @@ export const confirmYesNo = async (text: string) => {
   return false;
 };
 
-export const alert = async (text: string) => {
+export const alert = async (text: string, title?: string) => {
   await Swal.fire({
+    title,
     text,
   });
 };
