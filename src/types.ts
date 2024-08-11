@@ -4,7 +4,10 @@ export type MaybeLocalStorage = Partial<WindowLocalStorage>;
 
 export type NostrEvent = nostrify.NostrEvent;
 
-export type UnsignedEvent = Omit<NostrEvent, "created_at" | "pubkey">;
+export type UnsignedEvent = Omit<
+  NostrEvent,
+  "created_at" | "pubkey" | "id" | "sig"
+>;
 
 export type Note = {
   id: string;
