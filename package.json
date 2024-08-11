@@ -32,6 +32,7 @@
     "leaflet.sidepanel": "https://github.com/maxwell-ilai/Leaflet.SidePanel",
     "nostr-tools": "^1.2.1",
     "pluscodes": "^2.6.0",
+    "process": "^0.11.10",
     "sweetalert2": "^11.11.0"
   },
   "packageManager": "yarn@4.4.0",
