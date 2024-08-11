@@ -29,7 +29,7 @@ export const getProfileFromEvent = ({
 }: {
   event: NostrEvent;
 }): Profile => {
-  if (event.kind !== Kind.Metadata) {
+  if (event?.kind !== Kind.Metadata) {
     throw new Error("#pC5T6P Trying to get profile from non metadata event");
   }
 
