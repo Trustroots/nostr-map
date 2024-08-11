@@ -145,11 +145,10 @@ async function backgroundNoteEventsFetching(onEventReceived) {
     authors: TRUSTED_VALIDATION_PUBKEYS,
   };
   for await (const message of relayPool.req([filter])) {
-    const [messageType, subscriptionId, event] = message;
+    const [messageType, , event] = message;
     if (messageType === "EVENT") {
-      const eventAuthorPublicKey = getPublicKeyFromEvent({ event });
       const eventDTag = getTagFirstValueFromEvent({ event, tag: "d" });
-      const eventIdentifier = `${eventAuthorPublicKey}.${eventDTag}`;
+      const eventIdentifier = `${event.pubkey}.${eventDTag}`;
       if (seenEventIdentifiers.has(eventIdentifier)) {
         continue;
       }
