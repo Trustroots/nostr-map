@@ -40,7 +40,6 @@ export const startup = async () => {
       globalThis.location.reload();
     };
 
-    const publicKey = await getPublicKey();
     const npubPublicKey = await getNpubPublicKey();
     const nsecPrivateKey = await getNsecPrivateKey();
 
