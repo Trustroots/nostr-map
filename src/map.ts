@@ -108,14 +108,12 @@ const circleMarker: CircleMarkerOptions = {
 const allKind30398Events = new NSet();
 
 async function updateGeochat() {
-  console.log("hacked open", allKind30398Events.size);
   const geochatNotes = document.getElementById(
     "geochat-notes"
   ) as HTMLUListElement;
   geochatNotes.innerHTML = "";
   geochatNotes;
   for (const event of allKind30398Events) {
-    console.log("handling geochat event");
     const authorPubkey = getPublicKeyFromEvent({ event });
     const metadataEvent = await getMetadataEvent(authorPubkey);
     if (!metadataEvent)
@@ -126,7 +124,6 @@ async function updateGeochat() {
     );
     const li = document.createElement("li");
     li.innerHTML = contentChat;
-    console.log("appending child");
     geochatNotes.appendChild(li);
   }
 }
