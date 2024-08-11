@@ -8,13 +8,15 @@ import {
   CONTENT_MAXIMUM_LENGTH,
   CONTENT_MINIMUM_LENGTH,
   PANEL_CONTAINER_ID,
+  PLUS_CODE_TAG_KEY,
 } from "./constants";
 import { hasPrivateKey } from "./nostr/keys";
 import { createNote } from "./nostr/notes";
 import { _initRelays } from "./nostr/relays";
-import { subscribe } from "./nostr/subscribe";
+import { getMetadataEvent, subscribe } from "./nostr/subscribe";
 import { startUserOnboarding } from "./onboarding";
-import { Note } from "./types";
+import { Note, NostrEvent, Kind30398Event, MetadataEvent } from "./types";
+import { getProfileFromEvent, getTagFirstValueFromEvent } from "./nostr/utils";
 
 const map = L.map("map", {
   zoomControl: false,
@@ -116,28 +118,35 @@ globalThis.addEventListener("popstate", (event) => {
   globalThis.document.location.reload();
 });
 
-function generateDatetimeFromNote(note: Note): string {
-  const { createdAt } = note;
+function generateDatetimeFromEvent(event: Kind30398Event): string {
+  const createdAt =
+    parseInt(
+      getTagFirstValueFromEvent({
+        event,
+        tag: "original_created_at",
+      }) ?? "0"
+    ) || 0;
   const date = new Date(createdAt * 1000);
 
   return date.toLocaleString();
 }
 
-function generateLinkFromNote(note: Note): string {
-  const { authorName, authorTrustrootsUsername, authorTripHoppingUserId } =
-    note;
-  if (authorTrustrootsUsername.length > 3) {
-    if (authorName.length > 1) {
-      return ` <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorName}</a>`;
+function generateLinkFromMetadataEvent(event: MetadataEvent): string {
+  const profile = getProfileFromEvent({ event });
+
+  const { name, trustrootsUsername, tripHoppingUserId } = profile;
+  if (trustrootsUsername.length > 3) {
+    if (name.length > 1) {
+      return ` <a href="https://www.trustroots.org/profile/${trustrootsUsername}" target="_blank">${name}</a>`;
     }
-    return ` <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorTrustrootsUsername}</a>`;
+    return ` <a href="https://www.trustroots.org/profile/${trustrootsUsername}" target="_blank">${trustrootsUsername}</a>`;
   }
 
-  if (authorTripHoppingUserId.length > 3) {
-    if (authorName.length > 1) {
-      return ` <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorName}</a>`;
+  if (tripHoppingUserId.length > 3) {
+    if (name.length > 1) {
+      return ` <a href="https://www.triphopping.com/profile/${tripHoppingUserId}" target="_blank">${name}</a>`;
     }
-    return ` <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorTripHoppingUserId.slice(
+    return ` <a href="https://www.triphopping.com/profile/${tripHoppingUserId}" target="_blank">${tripHoppingUserId.slice(
       0,
       5
     )}</a>`;
@@ -145,92 +154,94 @@ function generateLinkFromNote(note: Note): string {
   return "";
 }
 
-function generateMapContentFromNotes(notes: Note[]) {
-  const lines = notes.reduce((existingLines, note) => {
-    const link = generateLinkFromNote(note);
-    const datetime = generateDatetimeFromNote(note);
-    const noteContent = `${note.content}${link} ${datetime}`;
-    return existingLines.concat(noteContent);
-  }, [] as string[]);
-  const content = lines.join("<br />");
-  return content;
+function generateMapContentFromEvent(
+  event: Kind30398Event,
+  metadataEvent?: MetadataEvent
+) {
+  const link = metadataEvent
+    ? generateLinkFromMetadataEvent(metadataEvent)
+    : "";
+  const datetime = generateDatetimeFromEvent(event);
+  const noteContent = `${event.content}${link} ${datetime}`;
+  return noteContent;
 }
 
 // todo: needs to be DRYed up
-function generateChatContentFromNotes(notes: Note[]) {
-  const lines = notes.reduce((existingLines, note) => {
-    const link = generateLinkFromNote(note);
-    const datetime = generateDatetimeFromNote(note);
-    const noteContent = `${datetime}, ${link}: ${note.content}`;
-    return existingLines.concat(noteContent);
-  }, [] as string[]);
-  const content = lines.join("<br />");
-  return content;
+function generateChatContentFromNotes(
+  event: Kind30398Event,
+  metadataEvent: MetadataEvent
+) {
+  const link = generateLinkFromMetadataEvent(metadataEvent);
+  const datetime = generateDatetimeFromEvent(event);
+  const noteContent = `${datetime}, ${link}: ${event.content}`;
+  return noteContent;
 }
 
-function addNoteToMap(note: Note) {
-  let existing = plusCodesWithPopupsAndNotes[note.plusCode];
+function addNoteToMap(event: Kind30398Event) {
+  const plusCode =
+    getTagFirstValueFromEvent({
+      event,
+      tag: PLUS_CODE_TAG_KEY,
+    }) ?? "";
 
-  if (existing) {
-    const popup = existing.popup;
+  const decodedCoords = decode(plusCode);
+  const { resolution: res, longitude: cLong, latitude: cLat } = decodedCoords!;
 
-    // When using multiple NOSTR relays, deduplicate the notes by ID to ensure
-    // that we don't show the same note multiple times.
-    const noteAlreadyOnTheMap = existing.notes.find((n) => n.id === note.id);
-    if (typeof noteAlreadyOnTheMap !== "undefined") {
-      return;
-    }
+  let color;
+  let fillColor;
+  const hitchWikiYellow = "#F3DA71";
+  const hitchWikiYellowLight = "#FFFBEE";
+  const trGreen = "#12B591";
 
-    const notes = [...existing.notes, note];
-    popup.setContent(generateMapContentFromNotes(notes));
+  if (event.pubkey === HITCHMAPS_AUTHOR_PUBLIC_KEY) {
+    color = hitchWikiYellow;
+    fillColor = hitchWikiYellowLight;
   } else {
-    const decodedCoords = decode(note.plusCode);
-    const {
-      resolution: res,
-      longitude: cLong,
-      latitude: cLat,
-    } = decodedCoords!;
-
-    let color;
-    let fillColor;
-    const hitchWikiYellow = "#F3DA71";
-    const hitchWikiYellowLight = "#FFFBEE";
-    const trGreen = "#12B591";
-
-    if (note.authorPublicKey === HITCHMAPS_AUTHOR_PUBLIC_KEY) {
-      color = hitchWikiYellow;
-      fillColor = hitchWikiYellowLight;
-    } else {
-      color = trGreen;
-    }
-
-    const marker = L.circleMarker([cLat, cLong], {
-      ...circleMarker,
-      color: color,
-      fillColor: fillColor,
-    }); // Create marker with decoded coordinates
-    marker.addTo(map);
-
-    const contentMap = generateMapContentFromNotes([note]);
-    const contentChat = generateChatContentFromNotes([note]);
-
-    //todo: rename addNoteToMap and other map
-    console.log(note);
-    const geochatNotes = document.getElementById(
-      "geochat-notes"
-    ) as HTMLElement;
-    const li = document.createElement("li");
-    li.innerHTML = contentChat;
-    geochatNotes.appendChild(li);
-
-    const popup = L.popup().setContent(contentMap);
-    marker.bindPopup(popup);
-    marker.on("click", () => marker.openPopup());
-    plusCodesWithPopupsAndNotes[note.plusCode] = {
-      popup,
-      notes: [note],
-    };
+    color = trGreen;
   }
+
+  const marker = L.circleMarker([cLat, cLong], {
+    ...circleMarker,
+    color: color,
+    fillColor: fillColor,
+  }); // Create marker with decoded coordinates
+  marker.addTo(map);
+
+  // const contentChat = generateChatContentFromNotes([event]);
+
+  //todo: rename addNoteToMap and other map
+  console.log(event);
+  const geochatNotes = document.getElementById("geochat-notes") as HTMLElement;
+  const li = document.createElement("li");
+  // li.innerHTML = contentChat;
+  geochatNotes.appendChild(li);
+
+  marker.on(
+    "click",
+    async (markerClickEvent) =>
+      await populateAndOpenPopup(markerClickEvent, event)
+  );
+}
+
+async function populateAndOpenPopup(
+  markerClickEvent: L.LeafletEvent,
+  kind30398Event: Kind30398Event
+) {
+  const marker = markerClickEvent.target as L.Marker;
+
+  const authorPubkey = getTagFirstValueFromEvent({
+    event: kind30398Event,
+    tag: "p",
+  });
+  const metadataEvent = await getMetadataEvent(authorPubkey);
+  if (!metadataEvent)
+    console.warn(
+      `Could not get metadata event for "${kind30398Event.content}"`
+    );
+  const contentMap = generateMapContentFromEvent(kind30398Event, metadataEvent);
+  const popup = L.popup().setContent(contentMap);
+  marker.bindPopup(popup);
+  marker.openPopup();
 }
 
 function createPopupHtml(createNoteCallback) {
@@ -285,6 +296,6 @@ const mapStartup = async () => {
   L.DomUtil.addClass(badge, "hide");
   L.DomUtil.removeClass(badge, "show");
   await _initRelays();
-  subscribe({ onNoteReceived: addNoteToMap });
+  subscribe({ onEventReceived: addNoteToMap });
 };
 mapStartup();
