@@ -176,7 +176,21 @@ export const subscribe = async ({
 
   noteEventsQueue.forEach((event) => onEventReceived(event));
   backgroundProfileFetching(profileFilter);
+  backgroundNoteEventsFetching(onEventReceived);
 };
+
+async function backgroundNoteEventsFetching(onEventReceived) {
+  const relayPool = await _initRelays();
+  const filter = {
+    kinds: [MAP_NOTE_REPOST_KIND],
+    "#L": ["open-location-code"],
+    since: Math.floor(Date.now() / 1000),
+    authors: TRUSTED_VALIDATION_PUBKEYS,
+  };
+  for await (const msg of relayPool.req([filter])) {
+    if (msg[0] === "EVENT") onEventReceived(msg[2] as Kind30398Event);
+  }
+}
 
 async function backgroundProfileFetching(profileFilter) {
   const onProfileEvent = (event: MetadataEvent) => {

@@ -207,15 +207,6 @@ function addNoteToMap(event: Kind30398Event) {
   }); // Create marker with decoded coordinates
   marker.addTo(map);
 
-  // const contentChat = generateChatContentFromNotes([event]);
-
-  //todo: rename addNoteToMap and other map
-  console.log(event);
-  const geochatNotes = document.getElementById("geochat-notes") as HTMLElement;
-  const li = document.createElement("li");
-  // li.innerHTML = contentChat;
-  geochatNotes.appendChild(li);
-
   marker.on(
     "click",
     async (markerClickEvent) =>
