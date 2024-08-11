@@ -15,6 +15,8 @@ import { startWelcomeSequence } from "./welcome";
 // This is supported by parcel, our build system, but not recognised by
 // typescript, so we declare it here so that we can use it below.
 
+declare const process;
+
 export const startup = async () => {
   const isLoggedIn = await hasPrivateKey();
 
