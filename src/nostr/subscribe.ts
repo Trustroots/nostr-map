@@ -23,7 +23,6 @@ import {
   isValidPlusCode,
   uniq,
 } from "./utils";
-import { isValidAttribute } from "dompurify";
 import * as nostrify from "@nostrify/nostrify";
 
 const eventToNoteMinusProfile = ({
@@ -160,7 +159,7 @@ export const subscribe = async ({
 
   await _query({
     filters: [eventsFilterWithLimit],
-    onEvent: onNoteEvent,
+    onEvent: onNoteEvent as (event: NostrEvent) => void,
   });
 
   const authorsWithDuplicates = noteEventsQueue.map((event) =>
