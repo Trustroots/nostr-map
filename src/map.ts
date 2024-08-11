@@ -21,6 +21,7 @@ import {
   getPublicKeyFromEvent,
   getTagFirstValueFromEvent,
 } from "./nostr/utils";
+import { NSet } from "@nostrify/nostrify";
 
 const map = L.map("map", {
   zoomControl: false,
@@ -103,8 +104,38 @@ const circleMarker: CircleMarkerOptions = {
 
 (L.control as any).sidepanel(PANEL_CONTAINER_ID, { hasTabs: true }).addTo(map);
 
+// GEOCHAT HACKS
+const allKind30398Events = new NSet();
+
+async function updateGeochat() {
+  console.log("hacked open", allKind30398Events.size);
+  const geochatNotes = document.getElementById(
+    "geochat-notes"
+  ) as HTMLUListElement;
+  geochatNotes.innerHTML = "";
+  geochatNotes;
+  for (const event of allKind30398Events) {
+    console.log("handling geochat event");
+    const authorPubkey = getPublicKeyFromEvent({ event });
+    const metadataEvent = await getMetadataEvent(authorPubkey);
+    if (!metadataEvent)
+      console.warn(`#rtsNdn Could not get metadata event for event`, event);
+    const contentChat = generateChatContentFromNotes(
+      event as Kind30398Event,
+      metadataEvent
+    );
+    const li = document.createElement("li");
+    li.innerHTML = contentChat;
+    console.log("appending child");
+    geochatNotes.appendChild(li);
+  }
+}
+map.on("click", updateGeochat);
+
+// END GEOCHAT HACKS
+
 // The leaflet sidepanel plugin doesn't export an API, so we've written our own
-export const hackSidePanelOpen = () => {
+export const hackSidePanelOpen = async () => {
   const panel = L.DomUtil.get(PANEL_CONTAINER_ID);
   L.DomUtil.removeClass(panel!, "closed");
   L.DomUtil.addClass(panel!, "opened");
@@ -220,15 +251,18 @@ function generateMapContentFromEvent(
 // todo: needs to be DRYed up
 function generateChatContentFromNotes(
   event: Kind30398Event,
-  metadataEvent: MetadataEvent
+  metadataEvent?: MetadataEvent
 ) {
-  const link = generateLinkFromMetadataEvent(metadataEvent);
+  const link = metadataEvent
+    ? generateLinkFromMetadataEvent(metadataEvent)
+    : "";
   const datetime = generateDatetimeFromEvent(event);
   const noteContent = `${datetime}, ${link}: ${event.content}`;
   return noteContent;
 }
 
 function addNoteToMap(event: Kind30398Event) {
+  allKind30398Events.add(event);
   const plusCode =
     getTagFirstValueFromEvent({
       event,
