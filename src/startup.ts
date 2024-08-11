@@ -1,5 +1,4 @@
 import * as L from "leaflet";
-import { DEFAULT_RELAYS } from "./constants";
 import { hackSidePanelClosed, hackSidePanelOpen } from "./map";
 import { getRelays, setRelays } from "./nostr";
 import {
@@ -9,9 +8,9 @@ import {
   hasPrivateKey,
   unsetPrivateKey,
 } from "./nostr/keys";
+import { getDefaultRelays } from "./nostr/relays";
 import { startUserOnboarding } from "./onboarding";
 import { startWelcomeSequence } from "./welcome";
-import { getDefaultRelays } from "./nostr/relays";
 
 // This is supported by parcel, our build system, but not recognised by
 // typescript, so we declare it here so that we can use it below.
