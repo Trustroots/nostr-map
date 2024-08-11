@@ -31,3 +31,6 @@ export const HITCHMAPS_AUTHOR_PUBLIC_KEY =
 export const TRUSTROOTS_NPUB_PUT_URL = "https://www.trustroots.org/api/users";
 export const TRUSTROOTS_NIP5_URL =
   "https://www.trustroots.org/.well-known/nostr.json";
+
+export const POST_VALIDATION_TIMEOUT_SECONDS = 5;
+export const POST_ACCEPTANCE_TIMEOUT_SECONDS = 5;

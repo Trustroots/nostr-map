@@ -21,6 +21,7 @@ import {
 const fetchProfileQueue = newQueue(2);
 
 const metadataEvents = new nostrify.NCache({ max: 1000 });
+const kind30398Events = new nostrify.NCache({ max: 1000 });
 
 export async function getMetadataEvent(pubkey) {
   const events = await metadataEvents.query([{ authors: [pubkey] }]);
@@ -30,6 +31,10 @@ export async function getMetadataEvent(pubkey) {
   } else {
     return events[0] as MetadataEvent;
   }
+}
+
+export async function getKind30398Events() {
+  return kind30398Events;
 }
 
 type SubscribeParams = {
@@ -74,6 +79,8 @@ export const subscribe = async ({
     if (!isValidPlusCode(plusCode)) {
       return;
     }
+
+    kind30398Events.add(event);
 
     onEventReceived(event);
     const pubKey = getPublicKeyFromEvent({ event });
@@ -132,7 +139,7 @@ async function backgroundNoteEventsFetching(onEventReceived) {
 }
 
 const onProfileEvent = (event: MetadataEvent) => {
-  console.log("#zD1Iau got profile event", event);
+  // console.log("#zD1Iau got profile event", event);
 
   const profile = getProfileFromEvent({ event });
   const publicKey = getPublicKeyFromEvent({ event });

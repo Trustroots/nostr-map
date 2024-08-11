@@ -13,7 +13,11 @@ import {
 import { hasPrivateKey } from "./nostr/keys";
 import { createNote } from "./nostr/notes";
 import { _initRelays } from "./nostr/relays";
-import { getMetadataEvent, subscribe } from "./nostr/subscribe";
+import {
+  getKind30398Events,
+  getMetadataEvent,
+  subscribe,
+} from "./nostr/subscribe";
 import { startUserOnboarding } from "./onboarding";
 import { Note, NostrEvent, Kind30398Event, MetadataEvent } from "./types";
 import {
@@ -105,9 +109,9 @@ const circleMarker: CircleMarkerOptions = {
 (L.control as any).sidepanel(PANEL_CONTAINER_ID, { hasTabs: true }).addTo(map);
 
 // GEOCHAT HACKS
-const allKind30398Events = new NSet();
 
 async function updateGeochat() {
+  const allKind30398Events = await getKind30398Events();
   const geochatNotes = document.getElementById(
     "geochat-notes"
   ) as HTMLUListElement;
@@ -259,7 +263,6 @@ function generateChatContentFromNotes(
 }
 
 function addNoteToMap(event: Kind30398Event) {
-  allKind30398Events.add(event);
   const plusCode =
     getTagFirstValueFromEvent({
       event,
