@@ -95,6 +95,26 @@ export const _initRelays = async ({
   return relayPool;
 };
 
+export const getFirstEventFromAnyRelay = (filter: nostrify.NostrFilter) => {
+  return new Promise<nostrify.NostrEvent | void>((resolve, reject) => {
+    _initRelays().then(async (relays) => {
+      const subscription = relays.req([filter]);
+      for await (const message of subscription) {
+        const [messageType, , event] = message;
+        if (messageType === "EVENT") {
+          return resolve(event);
+        }
+        if (messageType === "EOSE") {
+          return resolve();
+        }
+        if (messageType === "CLOSED") {
+          return resolve();
+        }
+      }
+    });
+  });
+};
+
 export const _publish = async (event: NostrEvent): Promise<void> => {
   const relayPool = await _initRelays();
   return relayPool.event(event);

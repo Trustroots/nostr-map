@@ -9,7 +9,7 @@ import {
   TRUSTED_VALIDATION_PUBKEYS,
 } from "../constants";
 import { Kind30398Event, MetadataEvent } from "../types";
-import { _initRelays } from "./relays";
+import { _initRelays, getFirstEventFromAnyRelay } from "./relays";
 import {
   doesStringPassSanitisation,
   getProfileFromEvent,
@@ -126,10 +126,9 @@ function fetchProfileFactory(pubKey) {
       return;
     }
 
-    const relayPool = await _initRelays();
-    const events = (await relayPool.query([profileFilter])) as MetadataEvent[];
-    if (events.length > 0) {
-      onProfileEvent(events[0]);
+    const event = await getFirstEventFromAnyRelay(profileFilter);
+    if (typeof event !== "undefined") {
+      onProfileEvent(event as MetadataEvent);
     }
   };
 }
