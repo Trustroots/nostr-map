@@ -26,6 +26,46 @@ L.control
   })
   .addTo(map);
 
+// Add a custom button to zoom to user's location
+const LocationButton = L.Control.extend({
+  options: {
+    position: 'bottomright'
+  },
+
+  onAdd: function (map) {
+    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+    const button = L.DomUtil.create('button', 'leaflet-control-custom', container);
+    button.innerHTML = '📍'; // Location pin emoji
+    button.style.backgroundColor = 'white';
+    button.style.width = '30px';
+    button.style.height = '30px';
+    button.style.color = 'green'; // Make the pin green
+    button.title = 'Zoom to your location';
+    
+    // Move the button slightly to the left
+    container.style.marginRight = '10px';
+    
+    button.onclick = function() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          map.setView([lat, lon], 15); // Zoom in more than city level
+        }, function(error) {
+          console.error("Error getting location:", error);
+          alert("Unable to retrieve your location. Please check your browser settings.");
+        });
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    };
+
+    return container;
+  }
+});
+
+new LocationButton().addTo(map);
+
 // this lets us add multiple notes to a single area
 const plusCodesWithPopupsAndNotes: {
   [key: string]: { popup: L.Popup; notes: [Note] };
