@@ -175,7 +175,10 @@ export const subscribe = async ({
   };
 
   noteEventsQueue.forEach((event) => onEventReceived(event));
+  backgroundProfileFetching(profileFilter);
+};
 
+async function backgroundProfileFetching(profileFilter) {
   const onProfileEvent = (event: MetadataEvent) => {
     // if (isDev()) console.log("#zD1Iau got profile event", event);
 
@@ -197,9 +200,8 @@ export const subscribe = async ({
 
     // profiles[publicKey] = profile;
   };
-
   const relayPool = await _initRelays();
   for await (const msg of relayPool.req([profileFilter])) {
     if (msg[0] === "EVENT") onProfileEvent(msg[2] as MetadataEvent);
   }
-};
+}
