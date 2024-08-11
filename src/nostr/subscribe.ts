@@ -89,6 +89,7 @@ export const subscribe = async ({
     return;
   };
 
+  /*
   console.log("#6MgNzq Starting subscription", eventsFilter);
   // NOTE: This just handles events until the EOSE event. It does not maintain
   // an active subscription. So we do that below.
@@ -106,6 +107,7 @@ export const subscribe = async ({
   events.forEach(onNoteEvent);
 
   logStateToConsole();
+  */
 
   backgroundNoteEventsFetching(onNoteEvent);
 };
@@ -133,15 +135,27 @@ function fetchProfileFactory(pubKey) {
 }
 
 async function backgroundNoteEventsFetching(onEventReceived) {
+  const seenEventIdentifiers = new Set<string>();
+
   const relayPool = await _initRelays();
   const filter = {
     kinds: [MAP_NOTE_REPOST_KIND],
     "#L": ["open-location-code"],
-    since: Math.floor(Date.now() / 1000),
+    // since: Math.floor(Date.now() / 1000),
     authors: TRUSTED_VALIDATION_PUBKEYS,
   };
-  for await (const msg of relayPool.req([filter])) {
-    if (msg[0] === "EVENT") onEventReceived(msg[2] as Kind30398Event);
+  for await (const message of relayPool.req([filter])) {
+    const [messageType, subscriptionId, event] = message;
+    if (messageType === "EVENT") {
+      const eventAuthorPublicKey = getPublicKeyFromEvent({ event });
+      const eventDTag = getTagFirstValueFromEvent({ event, tag: "d" });
+      const eventIdentifier = `${eventAuthorPublicKey}.${eventDTag}`;
+      if (seenEventIdentifiers.has(eventIdentifier)) {
+        continue;
+      }
+      seenEventIdentifiers.add(eventIdentifier);
+      onEventReceived(event as Kind30398Event);
+    }
   }
 }
 
