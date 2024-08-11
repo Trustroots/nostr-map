@@ -37,5 +37,9 @@
   "packageManager": "yarn@4.4.0",
   "@parcel/resolver-default": {
     "packageExports": true
-  }
+  },
+  "alias": {
+    "process": "process/browser.js",
+    "buffer": "buffer"
+  },
 }
