@@ -10,9 +10,9 @@ This is running at [notes.trustroots.org](https://notes.trustroots.org/). And it
 - `nvm install` - This is only required one time
 - `nvm use`
 
-Then run yarn from corepack. There are 2 ways to do this. If you have yarn
-installed globally, you can uninstall it. Or you can run `corepack yarn` instead
-of `yarn`.
+Then run yarn from corepack. If you have yarn installed globally, you either
+need to uninstall it, or instead of running `yarn` run `corepack yarn` instead.
+That means substitute every `yarn` call below for `corepack yarn`.
 
 - `yarn`
 - `yarn start`
