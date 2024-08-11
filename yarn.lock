@@ -3279,7 +3279,7 @@ __metadata:
     leaflet: "npm:^1.9.3"
     leaflet.sidepanel: "https://github.com/maxwell-ilai/Leaflet.SidePanel"
     nostr-tools: "npm:^1.2.1"
-    parcel: "npm:^2.8.3"
+    parcel: "npm:^2.12.0"
     pluscodes: "npm:^2.6.0"
     prettier: "npm:2.8.3"
     sweetalert2: "npm:^11.11.0"
@@ -3415,7 +3415,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parcel@npm:^2.8.3":
+"parcel@npm:^2.12.0":
   version: 2.12.0
   resolution: "parcel@npm:2.12.0"
   dependencies:
