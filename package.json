@@ -37,5 +37,8 @@
   "packageManager": "yarn@4.4.0",
   "@parcel/resolver-default": {
     "packageExports": true
+  },
+  "@parcel/transformer-js": {
+    "inlineEnvironment": true
   }
 }
