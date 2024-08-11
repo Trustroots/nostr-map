@@ -41,7 +41,16 @@ export const getProfileFromEvent = ({
       Profile,
       "publicKey" | "npubPublicKey"
     >;
-    return { ...profile, publicKey, npubPublicKey };
+
+    const emptyProfile = {
+      name: "",
+      about: "",
+      trustrootsUsername: "",
+      tripHoppingUserId: "",
+      picture: "",
+    };
+
+    return { ...emptyProfile, ...profile, publicKey, npubPublicKey };
   } catch (e) {
     const message = "#j2o1vH Failed to get profile from event";
     console.error(message, e);
