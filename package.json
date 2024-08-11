@@ -9,7 +9,7 @@
   "scripts": {
     "start": "parcel --no-cache src/index.html",
     "build": "yarn build:parcel && yarn build:copy-public",
-    "build:parcel": "parcel build",
+    "build:parcel": "parcel build --no-scope-hoist",
     "build:copy-public": "cp public/* dist/",
     "prettier": "prettier --write src/",
     "deploy:build": "parcel build --public-url /nostr-map",
