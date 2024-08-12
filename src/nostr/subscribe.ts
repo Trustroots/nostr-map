@@ -3,7 +3,6 @@ import * as nostrify from "@nostrify/nostrify";
 import { Filter, Kind } from "nostr-tools";
 import {
   CONTENT_MAXIMUM_LENGTH,
-  EARLIEST_FILTER_SINCE,
   MAP_NOTE_REPOST_KIND,
   PLUS_CODE_TAG_KEY,
   TRUSTED_VALIDATION_PUBKEYS,
@@ -17,7 +16,6 @@ import {
   getTagFirstValueFromEvent,
   isValidPlusCode,
 } from "./utils";
-import { logStateToConsole, promiseWithTimeout } from "../utils";
 
 const fetchProfileQueue = newQueue(2);
 
@@ -50,17 +48,6 @@ export const subscribe = async ({
   limit = 200,
 }: SubscribeParams) => {
   console.log("#qnvvsm nostr/subscribe");
-
-  const oneMonthInSeconds = 30 * 24 * 60 * 60;
-  const oneMonthAgo = Math.round(Date.now() / 1e3) - oneMonthInSeconds;
-  const since = Math.max(EARLIEST_FILTER_SINCE, oneMonthAgo);
-  const eventsFilter: Filter = {
-    kinds: [MAP_NOTE_REPOST_KIND],
-    "#L": ["open-location-code"],
-    since,
-    authors: TRUSTED_VALIDATION_PUBKEYS,
-    limit,
-  };
 
   const onNoteEvent = (event: Kind30398Event) => {
     // if (isDev()) console.log("#gITVd2 gotNoteEvent", event);
