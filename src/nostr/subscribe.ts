@@ -1,5 +1,6 @@
 import { newQueue } from "@henrygd/queue";
 import * as nostrify from "@nostrify/nostrify";
+import * as kind30398event from "@shuesken/nostroots-kind30398event";
 import { Filter, Kind } from "nostr-tools";
 import {
   CONTENT_MAXIMUM_LENGTH,
@@ -49,31 +50,20 @@ export const subscribe = async ({
 }: SubscribeParams) => {
   console.log("#qnvvsm nostr/subscribe");
 
-  const onNoteEvent = (event: Kind30398Event) => {
+  const onNoteEvent = (event: any) => {
     // if (isDev()) console.log("#gITVd2 gotNoteEvent", event);
 
-    if (
-      !doesStringPassSanitisation(event.content) ||
-      event.content.length > CONTENT_MAXIMUM_LENGTH ||
-      !doesStringPassSanitisation(event.pubkey)
-    ) {
+    try {
+      const parsedEvent = kind30398event.kind30398EventSchema.parse(event);
+      kind30398Events.add(parsedEvent);
+      onEventReceived(parsedEvent);
+      const pubKey = getPublicKeyFromEvent({ event });
+      fetchProfileQueue.add(fetchProfileFactory(pubKey));
+      return;
+    } catch (e) {
+      console.warn(`Event could not be parsed: ${JSON.stringify(event)}`);
       return;
     }
-
-    const plusCode = getTagFirstValueFromEvent({
-      event,
-      tag: PLUS_CODE_TAG_KEY,
-    });
-    if (!isValidPlusCode(plusCode)) {
-      return;
-    }
-
-    kind30398Events.add(event);
-
-    onEventReceived(event);
-    const pubKey = getPublicKeyFromEvent({ event });
-    fetchProfileQueue.add(fetchProfileFactory(pubKey));
-    return;
   };
 
   /*

@@ -17,8 +17,12 @@ export const DEFAULT_RELAYS = [
 export const DEV_RELAYS = DEFAULT_RELAYS;
 export const PANEL_CONTAINER_ID = "panelID";
 export const BADGE_CONTAINER_ID = "badge";
-export const CONTENT_MINIMUM_LENGTH = 3;
-export const CONTENT_MAXIMUM_LENGTH = 300;
+
+export {
+  CONTENT_MAXIMUM_LENGTH,
+  CONTENT_MINIMUM_LENGTH,
+} from "@shuesken/nostroots-kind30398event";
+
 export const EARLIEST_FILTER_SINCE = 1716736622;
 
 export const TRUSTED_VALIDATION_PUBKEYS = [

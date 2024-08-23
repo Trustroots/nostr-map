@@ -1,8 +1,9 @@
 import * as nostrify from "@nostrify/nostrify";
+import * as kind30398event from "@shuesken/nostroots-kind30398event";
 
 export type MaybeLocalStorage = Partial<WindowLocalStorage>;
 
-export type NostrEvent = nostrify.NostrEvent;
+export type NostrEvent = kind30398event.Event;
 
 export type UnsignedEvent = Omit<
   NostrEvent,
