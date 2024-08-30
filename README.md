@@ -1,5 +1,10 @@
 # nostr-map
 
+> [!WARNING]
+> As of August 2024, this repo and project are being archived. Development continues on [nostroots](https://github.com/Trustroots/nostroots).
+
+---
+
 Read and leave **nostr notes on a map**.
 
 This is running at [notes.trustroots.org](https://notes.trustroots.org/). And it is part of our effort to [nostrify trustroots](https://github.com/Trustroots/nostroots).
