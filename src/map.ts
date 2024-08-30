@@ -1,4 +1,4 @@
-import L from "leaflet";
+import L, { CircleMarkerOptions } from "leaflet";
 import "leaflet.sidepanel";
 
 import { decode, encode } from "pluscodes";
@@ -8,13 +8,25 @@ import {
   CONTENT_MAXIMUM_LENGTH,
   CONTENT_MINIMUM_LENGTH,
   PANEL_CONTAINER_ID,
+  PLUS_CODE_TAG_KEY,
 } from "./constants";
 import { hasPrivateKey } from "./nostr/keys";
 import { createNote } from "./nostr/notes";
 import { _initRelays } from "./nostr/relays";
-import { subscribe } from "./nostr/subscribe";
+import {
+  getKind30398Events,
+  getMetadataEvent,
+  subscribe,
+} from "./nostr/subscribe";
 import { startUserOnboarding } from "./onboarding";
-import { Note } from "./types";
+import { Note, NostrEvent, Kind30398Event, MetadataEvent } from "./types";
+import {
+  getProfileFromEvent,
+  getPublicKeyFromEvent,
+  getTagFirstValueFromEvent,
+} from "./nostr/utils";
+import { NSet } from "@nostrify/nostrify";
+import { logStateToConsole } from "./utils";
 
 const map = L.map("map", {
   zoomControl: false,
@@ -26,6 +38,55 @@ L.control
   })
   .addTo(map);
 
+// Add a custom button to zoom to user's location
+const LocationButton = L.Control.extend({
+  options: {
+    position: "bottomright",
+  },
+
+  onAdd: function (map) {
+    const container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+    const button = L.DomUtil.create(
+      "button",
+      "leaflet-control-custom",
+      container
+    );
+    button.innerHTML = "📍"; // Location pin emoji
+    button.style.backgroundColor = "white";
+    button.style.width = "30px";
+    button.style.height = "30px";
+    button.style.color = "green"; // Make the pin green
+    button.title = "Zoom to your location";
+
+    // Move the button slightly to the left
+    container.style.marginRight = "10px";
+
+    button.onclick = function () {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            map.setView([lat, lon], 15); // Zoom in more than city level
+          },
+          function (error) {
+            console.error("Error getting location:", error);
+            alert(
+              "Unable to retrieve your location. Please check your browser settings."
+            );
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    };
+
+    return container;
+  },
+});
+
+new LocationButton().addTo(map);
+
 // this lets us add multiple notes to a single area
 const plusCodesWithPopupsAndNotes: {
   [key: string]: { popup: L.Popup; notes: [Note] };
@@ -36,22 +97,47 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
-// NOTE: None of these properties are recognised by the `@types/leaflet` types,
-// so we cast to `L.MarkerOptions` here.
-const circleMarker = {
+const circleMarker: CircleMarkerOptions = {
   color: "purple",
   fillColor: "#A020F0",
   fillOpacity: 0.5,
   radius: 8,
-} as L.MarkerOptions;
+};
 
 // NOTE: The leaflet sidepanel plugin doesn't have types in `@types/leaflet` and
 // so we need to cast to any here.
 
 (L.control as any).sidepanel(PANEL_CONTAINER_ID, { hasTabs: true }).addTo(map);
 
+// GEOCHAT HACKS
+
+async function updateGeochat() {
+  const allKind30398Events = await getKind30398Events();
+  const geochatNotes = document.getElementById(
+    "geochat-notes"
+  ) as HTMLUListElement;
+  geochatNotes.innerHTML = "";
+  geochatNotes;
+  for (const event of allKind30398Events) {
+    const authorPubkey = getPublicKeyFromEvent({ event });
+    const metadataEvent = await getMetadataEvent(authorPubkey);
+    if (!metadataEvent)
+      console.warn(`#rtsNdn Could not get metadata event for event`, event);
+    const contentChat = generateChatContentFromNotes(
+      event as Kind30398Event,
+      metadataEvent
+    );
+    const li = document.createElement("li");
+    li.innerHTML = contentChat;
+    geochatNotes.appendChild(li);
+  }
+}
+map.on("click", updateGeochat);
+
+// END GEOCHAT HACKS
+
 // The leaflet sidepanel plugin doesn't export an API, so we've written our own
-export const hackSidePanelOpen = () => {
+export const hackSidePanelOpen = async () => {
   const panel = L.DomUtil.get(PANEL_CONTAINER_ID);
   L.DomUtil.removeClass(panel!, "closed");
   L.DomUtil.addClass(panel!, "opened");
@@ -116,40 +202,35 @@ globalThis.addEventListener("popstate", (event) => {
   globalThis.document.location.reload();
 });
 
-function generateDatetimeFromNote(note: Note): string {
-  const { createdAt } = note;
+function generateDatetimeFromEvent(event: Kind30398Event): string {
+  const createdAt =
+    parseInt(
+      getTagFirstValueFromEvent({
+        event,
+        tag: "original_created_at",
+      }) ?? "0"
+    ) || 0;
   const date = new Date(createdAt * 1000);
 
   return date.toLocaleString();
-
-  const month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero-based, so add 1
-  const day = ("0" + date.getDate()).slice(-2);
-
-  // Extract the time components
-  const hours = ("0" + date.getHours()).slice(-2);
-  const minutes = ("0" + date.getMinutes()).slice(-2);
-
-  // Format the date and time strings
-  const datetime = `${hours}:${minutes} ${day}-${month}`;
-
-  return datetime;
 }
 
-function generateLinkFromNote(note: Note): string {
-  const { authorName, authorTrustrootsUsername, authorTripHoppingUserId } =
-    note;
-  if (authorTrustrootsUsername.length > 3) {
-    if (authorName.length > 1) {
-      return ` <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorName}</a>`;
+function generateLinkFromMetadataEvent(event: MetadataEvent): string {
+  const profile = getProfileFromEvent({ event });
+
+  const { name, trustrootsUsername, tripHoppingUserId } = profile;
+  if (trustrootsUsername.length > 2) {
+    if (name.length > 1) {
+      return ` <a href="https://www.trustroots.org/profile/${trustrootsUsername}" target="_blank">${name}</a>`;
     }
-    return ` <a href="https://www.trustroots.org/profile/${authorTrustrootsUsername}" target="_blank">${authorTrustrootsUsername}</a>`;
+    return ` <a href="https://www.trustroots.org/profile/${trustrootsUsername}" target="_blank">${trustrootsUsername}</a>`;
   }
 
-  if (authorTripHoppingUserId.length > 3) {
-    if (authorName.length > 1) {
-      return ` <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorName}</a>`;
+  if (tripHoppingUserId.length > 3) {
+    if (name.length > 1) {
+      return ` <a href="https://www.triphopping.com/profile/${tripHoppingUserId}" target="_blank">${name}</a>`;
     }
-    return ` <a href="https://www.triphopping.com/profile/${authorTripHoppingUserId}" target="_blank">${authorTripHoppingUserId.slice(
+    return ` <a href="https://www.triphopping.com/profile/${tripHoppingUserId}" target="_blank">${tripHoppingUserId.slice(
       0,
       5
     )}</a>`;
@@ -157,90 +238,86 @@ function generateLinkFromNote(note: Note): string {
   return "";
 }
 
-function generateMapContentFromNotes(notes: Note[]) {
-  const lines = notes.reduce((existingLines, note) => {
-    const link = generateLinkFromNote(note);
-    const datetime = generateDatetimeFromNote(note);
-    const noteContent = `${note.content}${link} ${datetime}`;
-    return existingLines.concat(noteContent);
-  }, [] as string[]);
-  const content = lines.join("<br />");
-  return content;
+function generateMapContentFromEvent(
+  event: Kind30398Event,
+  metadataEvent?: MetadataEvent
+) {
+  const link = metadataEvent
+    ? generateLinkFromMetadataEvent(metadataEvent)
+    : "";
+  const datetime = generateDatetimeFromEvent(event);
+  const noteContent = `${event.content}${link} ${datetime}`;
+  return noteContent;
 }
 
 // todo: needs to be DRYed up
-function generateChatContentFromNotes(notes: Note[]) {
-  const lines = notes.reduce((existingLines, note) => {
-    const link = generateLinkFromNote(note);
-    const datetime = generateDatetimeFromNote(note);
-    const noteContent = `${datetime}, ${link}: ${note.content}`;
-    return existingLines.concat(noteContent);
-  }, [] as string[]);
-  const content = lines.join("<br />");
-  return content;
+function generateChatContentFromNotes(
+  event: Kind30398Event,
+  metadataEvent?: MetadataEvent
+) {
+  const link = metadataEvent
+    ? generateLinkFromMetadataEvent(metadataEvent)
+    : "";
+  const datetime = generateDatetimeFromEvent(event);
+  const noteContent = `${datetime}, ${link}: ${event.content}`;
+  return noteContent;
 }
 
-function addNoteToMap(note: Note) {
-  let existing = plusCodesWithPopupsAndNotes[note.plusCode];
+function addNoteToMap(event: Kind30398Event) {
+  const plusCode =
+    getTagFirstValueFromEvent({
+      event,
+      tag: PLUS_CODE_TAG_KEY,
+    }) ?? "";
 
-  if (existing) {
-    const popup = existing.popup;
+  const decodedCoords = decode(plusCode);
+  const { resolution: res, longitude: cLong, latitude: cLat } = decodedCoords!;
 
-    // When using multiple NOSTR relays, deduplicate the notes by ID to ensure
-    // that we don't show the same note multiple times.
-    const noteAlreadyOnTheMap = existing.notes.find((n) => n.id === note.id);
-    if (typeof noteAlreadyOnTheMap !== "undefined") {
-      return;
-    }
+  let color;
+  let fillColor;
+  const hitchWikiYellow = "#F3DA71";
+  const hitchWikiYellowLight = "#FFFBEE";
+  const trGreen = "#12B591";
 
-    const notes = [...existing.notes, note];
-    popup.setContent(generateMapContentFromNotes(notes));
+  if (event.pubkey === HITCHMAPS_AUTHOR_PUBLIC_KEY) {
+    color = hitchWikiYellow;
+    fillColor = hitchWikiYellowLight;
   } else {
-    const decodedCoords = decode(note.plusCode);
-    const {
-      resolution: res,
-      longitude: cLong,
-      latitude: cLat,
-    } = decodedCoords!;
-
-    let color;
-    let fillColor;
-    const hitchWikiYellow = "#F3DA71";
-    const hitchWikiYellowLight = "#FFFBEE";
-    const trGreen = "#12B591";
-
-    if (note.authorPublicKey === HITCHMAPS_AUTHOR_PUBLIC_KEY) {
-      color = hitchWikiYellow;
-      fillColor = hitchWikiYellowLight;
-    } else {
-      color = trGreen;
-    }
-
-    const marker = L.circleMarker([cLat, cLong], {
-      ...circleMarker,
-      color: color,
-      fillColor: fillColor,
-    }); // Create marker with decoded coordinates
-    marker.addTo(map);
-
-    const contentMap = generateMapContentFromNotes([note]);
-    const contentChat = generateChatContentFromNotes([note]);
-
-    //todo: rename addNoteToMap and other map
-    console.log(note);
-    const geochatNotes = document.getElementById("geochat-notes");
-    const li = document.createElement("li");
-    li.innerHTML = contentChat;
-    geochatNotes.appendChild(li);
-
-    const popup = L.popup().setContent(contentMap);
-    marker.bindPopup(popup);
-    marker.on("click", () => marker.openPopup());
-    plusCodesWithPopupsAndNotes[note.plusCode] = {
-      popup,
-      notes: [note],
-    };
+    color = trGreen;
   }
+
+  // Create marker with decoded coordinates
+  const marker = L.circleMarker([cLat, cLong], {
+    ...circleMarker,
+    color,
+    fillColor,
+  });
+  marker.addTo(map);
+
+  marker.on(
+    "click",
+    async (markerClickEvent) =>
+      await populateAndOpenPopup(markerClickEvent, event)
+  );
+}
+
+async function populateAndOpenPopup(
+  markerClickEvent: L.LeafletEvent,
+  kind30398Event: Kind30398Event
+) {
+  const marker = markerClickEvent.target as L.Marker;
+
+  const authorPubkey = getPublicKeyFromEvent({ event: kind30398Event });
+  const metadataEvent = await getMetadataEvent(authorPubkey);
+  if (!metadataEvent)
+    console.warn(
+      `#rtsNdn Could not get metadata event for event`,
+      kind30398Event
+    );
+  const contentMap = generateMapContentFromEvent(kind30398Event, metadataEvent);
+  const popup = L.popup().setContent(contentMap);
+  marker.bindPopup(popup);
+  marker.openPopup();
 }
 
 function createPopupHtml(createNoteCallback) {
@@ -278,11 +355,9 @@ function createPopupHtml(createNoteCallback) {
   submitButton.onclick = () => {
     const content = contentTextArea.value;
     const expirationTime = parseInt(expirationSelect.value) || null;
-    console.log("time", expirationTime);
     const expirationDate = expirationTime
       ? Math.floor(Date.now() / 1000 + expirationTime)
       : null;
-    console.log("expiration date", expirationDate), expirationTime;
     createNoteCallback(content, expirationDate);
     map.closePopup();
   };
@@ -293,10 +368,13 @@ function createPopupHtml(createNoteCallback) {
 }
 
 const mapStartup = async () => {
+  logStateToConsole();
   const badge = L.DomUtil.get(BADGE_CONTAINER_ID) as HTMLElement;
   L.DomUtil.addClass(badge, "hide");
   L.DomUtil.removeClass(badge, "show");
   await _initRelays();
-  subscribe({ onNoteReceived: addNoteToMap });
+  subscribe({ onEventReceived: addNoteToMap });
 };
 mapStartup();
+
+setInterval(logStateToConsole, 30 * 1000); // log state every 30 seconds

@@ -16,7 +16,16 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18'
+        node-version: '20'
+    
+    - name: Write SHA into file
+      run: echo "export const BUILD_SHA = \"${GITHUB_SHA}\";" > build.ts
+
+    - name: Enable Corepack
+      run: corepack enable
+
+    - name: Prepare Yarn
+      run: corepack prepare yarn@4.4.0 --activate
 
     - name: Configure git to use HTTPS instead of SSH
       run: git config --global url."https://".insteadOf ssh://
@@ -32,4 +41,3 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist
-

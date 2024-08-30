@@ -8,6 +8,7 @@ import {
   signEvent,
 } from "nostr-tools";
 import Swal from "sweetalert2";
+import { MAP_NOTE_REPOST_KIND } from "../constants";
 import { getTrustrootsUsernameFromLocation } from "../router";
 import { NostrEvent, Profile, UnsignedEvent } from "../types";
 import { setProfile } from "./profiles";
@@ -19,6 +20,14 @@ export const dateToUnix = (_date?: Date) => {
 };
 
 export const getPublicKeyFromEvent = ({ event }: { event: NostrEvent }) => {
+  if (event.kind === MAP_NOTE_REPOST_KIND) {
+    const pTagValue = getTagFirstValueFromEvent({ event, tag: "p" });
+    if (typeof pTagValue === "undefined") {
+      throw new Error("#c5LIMS Event 30398 missing p tag");
+    }
+    return pTagValue;
+  }
+
   const maybeDelegator = nip26.getDelegator(event);
   return maybeDelegator || event.pubkey;
 };
@@ -28,7 +37,7 @@ export const getProfileFromEvent = ({
 }: {
   event: NostrEvent;
 }): Profile => {
-  if (event.kind !== Kind.Metadata) {
+  if (event?.kind !== Kind.Metadata) {
     throw new Error("#pC5T6P Trying to get profile from non metadata event");
   }
 
@@ -40,7 +49,16 @@ export const getProfileFromEvent = ({
       Profile,
       "publicKey" | "npubPublicKey"
     >;
-    return { ...profile, publicKey, npubPublicKey };
+
+    const emptyProfile = {
+      name: "",
+      about: "",
+      trustrootsUsername: "",
+      tripHoppingUserId: "",
+      picture: "",
+    };
+
+    return { ...emptyProfile, ...profile, publicKey, npubPublicKey };
   } catch (e) {
     const message = "#j2o1vH Failed to get profile from event";
     console.error(message, e);

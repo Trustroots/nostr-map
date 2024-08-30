@@ -11,8 +11,10 @@ export const DEFAULT_RELAYS = [
   "wss://relay.primal.net",
   "wss://relay.damus.io",
   "wss://nostr.manasiwibi.com",
+  "wss://nos.lol",
 ];
-export const DEV_RELAYS = ["wss://nos.lol"];
+// Dev vs production relays don't work because relays copy from each other.
+export const DEV_RELAYS = DEFAULT_RELAYS;
 export const PANEL_CONTAINER_ID = "panelID";
 export const BADGE_CONTAINER_ID = "badge";
 export const CONTENT_MINIMUM_LENGTH = 3;
@@ -27,3 +29,8 @@ export const HITCHMAPS_AUTHOR_PUBLIC_KEY =
   "53055ee011e96a00a705b38253b9cbc6614ccbd37df4dad42ec69bbe608c4209" as const;
 
 export const TRUSTROOTS_NPUB_PUT_URL = "https://www.trustroots.org/api/users";
+export const TRUSTROOTS_NIP5_URL =
+  "https://www.trustroots.org/.well-known/nostr.json";
+
+export const POST_VALIDATION_TIMEOUT_SECONDS = 5;
+export const POST_ACCEPTANCE_TIMEOUT_SECONDS = 5;

@@ -2,10 +2,9 @@ import { Event, Filter, Relay, Sub, relayInit } from "nostr-tools";
 import { DEFAULT_RELAYS, DEV_RELAYS, RELAYS_STORAGE_KEY } from "../constants";
 import { MaybeLocalStorage, NostrEvent } from "../types";
 import { isDev } from "./utils";
+import * as nostrify from "@nostrify/nostrify";
 
-const relays: Relay[] = [];
-globalThis.relays = relays;
-let connectedPromise: Promise<void | void[]>;
+let globalRelayPool: nostrify.NPool;
 
 /**
  * Get the list of relays we're connecting to
@@ -63,75 +62,62 @@ export const setRelays = async ({
 
 export const _initRelays = async ({
   urls = [],
-}: { urls?: string[] } = {}): Promise<void> => {
-  if (typeof connectedPromise !== "undefined") {
-    // NOTE: We need to cast here because TypeScript doesn't know if this will
-    // be an array or a single void and so it complains. In reality, we don't
-    // care, we just want to await this promise and ignore it's output.
-    return connectedPromise as Promise<void>;
-  }
+}: { urls?: string[] } = {}): Promise<nostrify.NPool> => {
   // Ensure this is only invoked once
-  if (relays.length > 0) {
-    return;
+  if (globalRelayPool) {
+    return globalRelayPool;
   }
-
   // Use the result from `getRelays()` if `urls` is not provided
   const realUrls = urls.length === 0 ? await getRelays() : urls;
 
-  const connectionPromises = realUrls.map(async (url) => {
-    const relay = relayInit(url);
-    try {
-      await relay.connect();
-    } catch (error) {
-      console.error("#b9aLfB Connecting to relay failed", relay.url, error);
-      return;
-    }
-    relays.push(relay);
+  console.log(`Opening new NPool… with ${realUrls.join(", ")}`);
+
+  const relayPool = new nostrify.NPool({
+    open(url) {
+      console.log(`Connecting to ${url}…`);
+      return new nostrify.NRelay1(url, {
+        backoff: false, // TODO the default here is ExponentialBackoff, we should use that
+      });
+    },
+    async reqRouter(filter: nostrify.NostrFilter[]) {
+      const map = new Map();
+      realUrls.map((url) => {
+        map.set(url, filter);
+      });
+      return map;
+    },
+    async eventRouter(_event) {
+      return realUrls;
+    },
   });
+  globalRelayPool = relayPool;
 
-  connectedPromise = Promise.all(connectionPromises);
-  await connectedPromise;
-
-  if (relays.length === 0) {
-    console.error("#qDRSs5 All relays failed to connect");
-    globalThis.alert(
-      "Error: All relays failed to connect. Please wait a minute and reload."
-    );
-  }
+  return relayPool;
 };
 
-export const _publish = (event: Event): Promise<void>[] => {
-  const publishPromises = relays.map((relay) => {
-    return new Promise<void>((resolve, reject) => {
-      const pub = relay.publish(event);
-      pub.on("ok", () => resolve());
-      pub.on("failed", (reason) => reject(`${relay.url} - ${reason}`));
+export const getFirstEventFromAnyRelay = (filter: nostrify.NostrFilter) => {
+  return new Promise<nostrify.NostrEvent | void>((resolve, reject) => {
+    _initRelays().then(async (relays) => {
+      const subscription = relays.req([filter]);
+      for await (const message of subscription) {
+        const [messageType, , event] = message;
+        if (messageType === "EVENT") {
+          return resolve(event);
+        }
+        if (messageType === "EOSE") {
+          return resolve();
+        }
+        if (messageType === "CLOSED") {
+          return resolve();
+        }
+      }
     });
   });
-  return publishPromises;
 };
 
-type SubscribeParams = {
-  filters: Filter[];
-  onEvent: (event: NostrEvent) => void;
-};
-export const _subscribe = async ({
-  filters,
-  onEvent,
-}: SubscribeParams): Promise<Promise<Sub>[]> => {
-  await _initRelays();
-  const subscriptions = relays.map(
-    (relay) =>
-      new Promise<Sub>((resolve, reject) => {
-        const subscription = relay.sub(filters);
-        subscription.on("event", onEvent);
-        subscription.on("eose", () => {
-          resolve(subscription);
-        });
-      })
-  );
-
-  return subscriptions;
+export const _publish = async (event: NostrEvent): Promise<void> => {
+  const relayPool = await _initRelays();
+  return relayPool.event(event);
 };
 
 export const getDefaultRelays = () => {
