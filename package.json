@@ -27,6 +27,7 @@
   "dependencies": {
     "@henrygd/queue": "npm:@jsr/henrygd__queue@^1.0.6",
     "@nostrify/nostrify": "npm:@jsr/nostrify__nostrify@^0.30.0",
+    "@shuesken/nostroots-kind30398event": "npm:@jsr/shuesken__nostroots-kind30398event@^0.0.1",
     "dompurify": "^3.1.4",
     "leaflet": "^1.9.3",
     "leaflet.sidepanel": "https://github.com/maxwell-ilai/Leaflet.SidePanel",
