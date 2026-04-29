@@ -117,6 +117,31 @@
         text-decoration: none;
       }
 
+      .header-quicklinks {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.82rem;
+        letter-spacing: 0.02em;
+      }
+
+      .header-quicklinks a {
+        color: rgba(255, 255, 255, 0.86);
+        text-decoration: none;
+      }
+
+      .header-quicklinks a:hover {
+        color: #fff;
+        text-decoration: underline;
+      }
+
+      .header-quicklinks .sep {
+        color: rgba(255, 255, 255, 0.55);
+      }
+
       .container {
         max-width: 960px;
         margin: 0 auto;
@@ -366,6 +391,13 @@
       <a href="https://www.trustroots.org/"><img class="logo" src="logo.svg" alt="Trustroots" /></a>
       <h1>Nostroots</h1>
       <a href="index.html" class="header-url">notes.trustroots.org</a>
+      <nav class="header-quicklinks" aria-label="Platform links">
+        <a href="https://nos.trustroots.org">Web app</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="https://testflight.apple.com/join/n5WGu8Hu">iOS</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="https://github.com/Trustroots/nostroots/releases">Android</a>
+      </nav>
     </div>
 
     <div class="container">
@@ -385,6 +417,19 @@
           <li>Subscribe to areas to hear from other community members</li>
           <li>Own your data — your identity and connections are portable</li>
         </ul>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <h2>Web app</h2>
+          <p>
+            Try the experimental web app with a few extra features.
+          </p>
+          <a class="btn" href="https://nos.trustroots.org">
+            Open web app
+          </a>
+          <img class="mushroom-accent" src="images/mushroom-single.png" alt="" height="60" />
+        </div>
       </div>
 
       <div class="cards">
